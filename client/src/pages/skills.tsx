@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SkillsPage() {
   const [activeTab, setActiveTab] = useState<'resume' | 'survey'>('resume');
@@ -16,6 +17,76 @@ export default function SkillsPage() {
   });
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/bmp', 'image/tiff'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF or image file.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: "Please upload a file smaller than 10MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadedFileName(file.name);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload/resume', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed');
+      }
+
+      setResumeText(result.extractedText);
+      toast({
+        title: "File uploaded successfully",
+        description: `Text extracted from ${file.name}`,
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Upload failed",
+        description: error instanceof Error ? error.message : "Failed to process file",
+        variant: "destructive"
+      });
+      setUploadedFileName('');
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const handleResumeAnalysis = async () => {
     if (!resumeText.trim()) return;
@@ -158,33 +229,109 @@ export default function SkillsPage() {
                   Resume Analysis
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Paste your resume or CV below to get personalized course recommendations based on your experience and skills.
+                  Upload your resume (PDF or image) or paste your CV text below to get personalized course recommendations based on your experience and skills. Our OCR technology can extract text from images automatically.
                 </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Textarea
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                  placeholder="Paste your resume content here..."
-                  className="min-h-[200px] bg-background"
-                />
-                <Button 
-                  onClick={handleResumeAnalysis}
-                  disabled={!resumeText.trim() || isAnalyzing}
-                  className="w-full"
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Analyzing Resume...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-search mr-2"></i>
-                      Analyze & Get Recommendations
-                    </>
+              <CardContent className="space-y-6">
+                {/* File Upload Section */}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".pdf,.png,.jpg,.jpeg,.gif,.bmp,.tiff"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        disabled={isUploading}
+                      />
+                      <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        variant="outline"
+                        className="w-full h-12 border-dashed border-2 hover:border-primary/50"
+                      >
+                        {isUploading ? (
+                          <>
+                            <i className="fas fa-spinner fa-spin mr-2"></i>
+                            Processing {uploadedFileName}...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-upload mr-2"></i>
+                            Upload Resume (PDF or Image)
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {uploadedFileName && !isUploading && (
+                    <div className="flex items-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <i className="fas fa-check-circle text-green-600 dark:text-green-400 mr-2"></i>
+                      <span className="text-sm text-green-700 dark:text-green-300">
+                        Successfully processed: {uploadedFileName}
+                      </span>
+                    </div>
                   )}
-                </Button>
+
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p><strong>Supported formats:</strong> PDF files and images (PNG, JPG, JPEG, GIF, BMP, TIFF)</p>
+                    <p><strong>File size limit:</strong> 10MB maximum</p>
+                    <p><strong>OCR Support:</strong> Text will be automatically extracted from images using advanced OCR technology</p>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className="flex-1 border-t border-border"></div>
+                    <span className="px-3 text-sm text-muted-foreground bg-background">OR</span>
+                    <div className="flex-1 border-t border-border"></div>
+                  </div>
+                </div>
+
+                {/* Text Input Section */}
+                <div className="space-y-4">
+                  <Textarea
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    placeholder="Paste your resume content here, or upload a file above..."
+                    className="min-h-[200px] bg-background"
+                  />
+                  
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button 
+                      onClick={handleResumeAnalysis}
+                      disabled={!resumeText.trim() || isAnalyzing}
+                      className="flex-1"
+                    >
+                      {isAnalyzing ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin mr-2"></i>
+                          Analyzing Resume...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-search mr-2"></i>
+                          Analyze & Get Recommendations
+                        </>
+                      )}
+                    </Button>
+                    
+                    {resumeText && (
+                      <Button 
+                        onClick={() => {
+                          setResumeText('');
+                          setUploadedFileName('');
+                          setRecommendations([]);
+                        }}
+                        variant="outline"
+                        size="default"
+                      >
+                        <i className="fas fa-trash mr-2"></i>
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
