@@ -7,20 +7,22 @@ EduTutor is a session-based educational AI chat platform that provides personali
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
-Preferred UI framework: Bootstrap 5 for responsive design.
-Preferred theme: Dark mode by default.
-Preferred layout: Collapsible left sidebar for better mobile experience.
+Preferred UI framework: Bootstrap 5 for responsive design with modern styling.
+Preferred theme: Professional dark mode with dropdown menu in top right corner.
+Preferred layout: Collapsible left sidebar with smooth animations.
+Project setup: GitHub-friendly with proper documentation and easy deployment.
 
 ## System Architecture
 
 ### Frontend Architecture
 - **Framework**: React with TypeScript using Vite as the build tool
 - **UI Library**: Shadcn/ui components built on Radix UI primitives + Bootstrap 5
-- **Styling**: Tailwind CSS with CSS variables for theming + Bootstrap responsive grid
+- **Styling**: Tailwind CSS with professional CSS variables + Bootstrap responsive grid
 - **State Management**: Zustand for global application state
 - **Data Fetching**: TanStack Query (React Query) for server state management
 - **Routing**: Wouter for lightweight client-side routing
-- **Theme Management**: Custom ThemeContext with localStorage persistence
+- **Theme Management**: Custom ThemeContext with dropdown menu and smooth transitions
+- **Components**: Professional dropdown, header with settings, elevated cards with hover effects
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js server
@@ -104,4 +106,27 @@ Preferred layout: Collapsible left sidebar for better mobile experience.
 - **Runtime Error Overlay**: Replit-specific development tools
 - **Cartographer**: Development-only code navigation assistance
 
-The architecture is designed for easy transition from development to production, with clear separation of concerns and modular components that can be scaled independently.
+## Recent Changes (January 2025)
+
+### Major UI/UX Overhaul
+- **Professional Dark Mode**: Complete redesign with proper contrast ratios and beautiful color palette
+- **Dropdown Settings Menu**: Added professional dropdown in top-right corner for theme switching and settings
+- **Smooth Animations**: Added professional transitions and hover effects throughout the interface
+- **Icon Compatibility**: Fixed all icons to work properly in both dark and light modes
+- **Card Design**: Modern elevated cards with scale animations and proper shadows
+- **Responsive Layout**: Improved mobile experience with better sidebar and overlay handling
+
+### GitHub Deployment Preparation
+- **Documentation**: Added comprehensive README.md with setup instructions and features
+- **Environment Setup**: Created .env.example with proper API key configuration
+- **License & Contributing**: Added MIT license and contribution guidelines
+- **Cleanup**: Removed Replit-specific files and dependencies for clean GitHub deployment
+- **Professional Styling**: CSS variables system for consistent theming across all components
+
+### Technical Improvements
+- **Header Component**: New header with session indicators and settings dropdown
+- **Theme System**: Improved dark/light mode switching with better color management
+- **Bootstrap Integration**: Professional styling that works with existing component system
+- **File Structure**: Organized components for better maintainability
+
+The architecture is designed for easy transition from development to production, with clear separation of concerns and modular components that can be scaled independently. Now fully GitHub-ready for easy cloning and deployment.
