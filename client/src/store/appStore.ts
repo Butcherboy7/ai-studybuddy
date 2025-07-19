@@ -69,7 +69,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   isLoading: false,
   sidebarCollapsed: true, // Start collapsed on mobile by default
 
-  setCurrentView: (view) => set({ currentView: view }),
+  setCurrentView: (view) => {
+    // Prevent unnecessary state updates that could cause freezing
+    const current = get().currentView;
+    if (current !== view) {
+      set({ currentView: view });
+    }
+  },
   
   setSelectedTutor: (tutor) => {
     set({ selectedTutor: tutor, currentView: 'chat' });

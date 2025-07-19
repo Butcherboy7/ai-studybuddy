@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,7 +18,12 @@ import AppSidebar from '@/components/layout/app-sidebar';
 import Header from '@/components/layout/header';
 
 export default function CareerAdvisor() {
-  const { sidebarCollapsed, toggleSidebar } = useAppStore();
+  const { sidebarCollapsed, toggleSidebar, setCurrentView } = useAppStore();
+  
+  // Ensure currentView is synced when component mounts
+  useEffect(() => {
+    setCurrentView('career-advisor');
+  }, [setCurrentView]);
   const [resumeText, setResumeText] = useState('');
   const [careerGoal, setCareerGoal] = useState('');
   const [targetRole, setTargetRole] = useState('');

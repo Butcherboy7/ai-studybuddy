@@ -98,12 +98,22 @@ export default function AppSidebar() {
           <button
             key={item.id}
             onClick={() => {
+              // Debounce navigation to prevent double-clicks and freezing
+              if (currentView === item.view) {
+                return; // Already on this view
+              }
+              
+              // Update view state first
+              setCurrentView(item.view);
+              
+              // Handle routing for specific pages
               if (item.view === 'career-advisor') {
                 setLocation('/career-advisor');
               } else if (item.view === 'welcome') {
                 setLocation('/');
               } else {
-                setCurrentView(item.view);
+                // For non-route views, navigate to home
+                setLocation('/');
               }
             }}
             className={cn(
