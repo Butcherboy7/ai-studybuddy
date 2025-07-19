@@ -236,11 +236,6 @@ export default function ChatInterface() {
       return response.json();
     },
     onSuccess: (data) => {
-      addMessage({
-        role: "assistant",
-        content: data.textResponse,
-        videoUrl: data.videoURL
-      });
       setLoading(false);
       queryClient.invalidateQueries({ queryKey: ['/api/chat', sessionId, 'messages'] });
     },
@@ -333,9 +328,9 @@ export default function ChatInterface() {
   const sendMessage = async (message: string) => {
     if (!message.trim() || isLoading) return;
 
-    // Add user message immediately
+    // Add user message immediately to UI
     addMessage({
-      role: "user",
+      role: "user", 
       content: message.trim()
     });
 
@@ -398,14 +393,11 @@ export default function ChatInterface() {
         
         const messageContent = `I've uploaded a PDF file with the following content:\n\n"${extractedText}"\n\nPlease help me analyze and understand this document.`;
         
-        addMessage({
-          role: "user",
-          content: messageContent
-        });
-
         // Auto-send for processing
-        setLoading(true);
-        sendMessageMutation.mutate(messageContent);
+        setInputMessage(messageContent);
+        setTimeout(() => {
+          handleSendMessage();
+        }, 100);
       } else {
         // For images, simulate OCR extraction
         extractedText = await performOCR(file);
@@ -413,19 +405,14 @@ export default function ChatInterface() {
         if (extractedText.trim()) {
           const messageContent = `I've uploaded an image with the following text:\n\n"${extractedText}"\n\nPlease help me understand or work with this content.`;
           
-          addMessage({
-            role: "user", 
-            content: messageContent
-          });
-
           // Auto-send for processing
-          setLoading(true);
-          sendMessageMutation.mutate(messageContent);
+          setInputMessage(messageContent);
+          setTimeout(() => {
+            handleSendMessage();
+          }, 100);
         } else {
-          addMessage({
-            role: "user",
-            content: `I've uploaded an image: ${file.name}. Please help me analyze this image.`
-          });
+          // Set message for manual sending
+          setInputMessage(`I've uploaded an image: ${file.name}. Please help me analyze this image.`);
         }
       }
 
@@ -529,8 +516,14 @@ export default function ChatInterface() {
     const messageText = inputMessage.trim();
     setInputMessage("");
     
-    // Use the existing sendMessage function to avoid duplication
-    await sendMessage(messageText);
+    // Add user message immediately to UI
+    addMessage({
+      role: "user",
+      content: messageText
+    });
+    
+    setLoading(true);
+    sendMessageMutation.mutate(messageText);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
