@@ -114,31 +114,55 @@ export async function generatePracticeQuestions(
   try {
     const hasUploadedContent = uploadedContent && uploadedContent.trim().length > 0;
     
-    const systemPrompt = `You are an expert educational content creator. Generate ${questionCount} practice questions for:
-    Subject: ${subject}
-    Topic: ${topic}
-    Difficulty: ${difficulty}
-    Question types: ${questionTypes.join(', ')}
-    
-    ${hasUploadedContent ? `
-    IMPORTANT: Base the questions on the following uploaded content:
-    "${uploadedContent}"
-    
-    Generate questions that test understanding of the concepts, facts, and information from this specific content.
-    ` : ''}
-    
-    Return a JSON array of questions with this exact format:
-    [
-      {
-        "type": "Multiple Choice" | "Short Answer" | "Problem Solving" | "Essay",
-        "question": "The question text",
-        "options": ["A", "B", "C", "D"] (only for multiple choice),
-        "answer": "Correct answer or expected response",
-        "explanation": "Detailed explanation of the solution",
-        "difficulty": "${difficulty}",
-        "points": number
-      }
-    ]`;
+    const systemPrompt = `You are an expert educational content creator specializing in generating high-quality practice questions. 
+
+TASK: Generate exactly ${questionCount} practice questions for:
+- Subject: ${subject}
+- Topic: ${topic}
+- Difficulty: ${difficulty}
+- Question types to use: ${questionTypes.join(', ')}
+
+${hasUploadedContent ? `
+CONTENT SOURCE: Base ALL questions on this specific uploaded content:
+"${uploadedContent}"
+
+REQUIREMENTS:
+- Extract key concepts, facts, formulas, and principles from the uploaded content
+- Generate questions that test comprehension, analysis, and application of the material
+- Ensure questions cover different aspects of the content (not just surface-level facts)
+- Include specific details, numbers, names, and terminology from the uploaded content
+- Make questions relevant to real-world applications where possible
+` : `
+REQUIREMENTS:
+- Create comprehensive questions covering core concepts in ${topic}
+- Include both theoretical understanding and practical application
+- Ensure questions are appropriate for ${difficulty} level students
+`}
+
+QUESTION TYPES GUIDE:
+- Multiple Choice: 4 options with one clearly correct answer
+- Short Answer: Requires 1-3 sentence responses
+- Problem Solving: Step-by-step mathematical or analytical problems
+- Essay: Requires detailed explanation or analysis (2-3 paragraphs)
+
+DIFFICULTY LEVELS:
+- Beginner: Basic concepts, definitions, simple applications
+- Intermediate: Analysis, comparison, multi-step problems
+- Advanced: Synthesis, evaluation, complex problem solving
+- Mixed: Combination of all levels
+
+Return a JSON array with this EXACT format:
+[
+  {
+    "type": "Multiple Choice" | "Short Answer" | "Problem Solving" | "Essay",
+    "question": "Clear, specific question text",
+    "options": ["Option A", "Option B", "Option C", "Option D"] (only for Multiple Choice),
+    "answer": "Correct answer or model response",
+    "explanation": "Detailed explanation of why this answer is correct",
+    "difficulty": "${difficulty}",
+    "points": 5
+  }
+]`;
 
     const contentPrompt = hasUploadedContent 
       ? `Generate practice questions based on the uploaded content provided in the system prompt. Focus on testing comprehension, analysis, and application of the material.`
