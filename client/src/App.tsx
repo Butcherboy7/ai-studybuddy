@@ -25,11 +25,10 @@ function Router() {
 }
 
 function App() {
-  const initializeSession = useAppStore(state => state.initializeSession);
-  
   useEffect(() => {
-    initializeSession();
-  }, [initializeSession]);
+    // Initialize session once on app start
+    useAppStore.getState().initializeSession();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
