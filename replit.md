@@ -58,6 +58,13 @@ Project setup: GitHub-friendly with proper documentation and easy deployment.
 - **Question Types**: Support for multiple choice, problem solving, and other formats
 - **Session Tracking**: Generated papers are saved and tracked within user sessions
 
+### Career Guidance & Resume Analysis
+- **Resume Intelligence**: AI-powered analysis of PDF and image-based resumes with OCR support
+- **Skill Gap Assessment**: Compares current competencies against career goals to identify learning priorities
+- **Course Recommendations**: Curated YouTube educational content suggestions for skill development
+- **Career Roadmaps**: Structured learning paths with phases, timelines, and project recommendations
+- **Progress Tracking**: Visual readiness scores and priority-based skill recommendations
+
 ## Data Flow
 
 1. **Session Initialization**: App generates unique session ID on first visit
@@ -108,13 +115,14 @@ Project setup: GitHub-friendly with proper documentation and easy deployment.
 
 ## Recent Changes (January 2025)
 
-### Latest Updates - UI Optimization & Quick Actions (January 19, 2025)
-- **Compact Tutor Cards**: Optimized layout to save vertical space by moving subject tags into small pills and popularity badges to header row
-- **Contextual Quick Actions**: Replaced static quick actions with dynamic buttons like "Explain like I'm 5", "Give me examples", "Make it simpler" that appear above chat input after AI responses
-- **Smart UI Flow**: Quick start options now disappear after tutor selection and first message to reduce clutter
-- **Enhanced Chat UX**: Improved space efficiency throughout the interface for better mobile and desktop experience
-- **Unified Welcome Experience**: Integrated chat header approach into welcome screen - when tutor is selected, header transforms to show tutor info and contextual starter questions
-- **PDF/OCR Practice Papers**: Added file upload functionality to practice paper generator with PDF and image OCR support for creating questions from study materials
+### Latest Updates - Resume Analysis & Career Guidance (January 19, 2025)
+- **AI Career Advisor**: New dedicated page with comprehensive resume analysis using Gemini AI
+- **Skill Gap Detection**: Intelligent analysis that compares current skills with career goals and identifies missing competencies
+- **YouTube Course Integration**: Automated course recommendations with direct links to relevant educational videos
+- **File Upload Support**: PDF and image upload with OCR text extraction for resume processing
+- **Career Roadmap Generation**: Personalized learning paths with timeline estimates and actionable next steps
+- **Professional Scoring System**: Career readiness scoring with visual progress indicators
+- **Collapsible Navigation**: Consistent sidebar navigation available across all pages for seamless tool switching
 
 ## Recent Changes (January 2025)
 

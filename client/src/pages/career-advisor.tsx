@@ -12,8 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAppStore } from '@/store/appStore';
+import { cn } from '@/lib/utils';
+import AppSidebar from '@/components/layout/app-sidebar';
+import Header from '@/components/layout/header';
 
 export default function CareerAdvisor() {
+  const { sidebarCollapsed, toggleSidebar } = useAppStore();
   const [resumeText, setResumeText] = useState('');
   const [careerGoal, setCareerGoal] = useState('');
   const [targetRole, setTargetRole] = useState('');
@@ -98,30 +103,62 @@ export default function CareerAdvisor() {
   };
 
   return (
-    <div className="container max-w-6xl mx-auto p-6 space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          AI Career Advisor
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300">
-          Upload your resume and get personalized career guidance with skill gap analysis and YouTube course recommendations
-        </p>
-      </div>
+    <div className="flex h-screen" style={{ backgroundColor: 'var(--main-bg)' }}>
+      <AppSidebar />
+      
+      {/* Mobile menu button */}
+      <button
+        onClick={toggleSidebar}
+        className="fixed top-4 left-4 z-50 md:hidden w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-all"
+        style={{ 
+          backgroundColor: 'var(--card)', 
+          borderColor: 'var(--border)',
+          color: 'var(--text-secondary)'
+        }}
+      >
+        <i className="fas fa-bars text-lg"></i>
+      </button>
+      
+      {/* Mobile sidebar overlay */}
+      {!sidebarCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-all"
+          onClick={toggleSidebar}
+        />
+      )}
+      
+      {/* Main content */}
+      <div className={cn(
+        "flex-1 flex flex-col transition-all duration-300",
+        sidebarCollapsed ? "md:ml-sidebar-collapsed" : "md:ml-sidebar"
+      )}>
+        <Header />
+        
+        <div className="flex-1 overflow-auto">
+          <div className="container max-w-6xl mx-auto p-6 space-y-8">
+            <div className="text-center space-y-4">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                AI Career Advisor
+              </h1>
+              <p className="text-lg text-gray-600 dark:text-gray-300">
+                Upload your resume and get personalized career guidance with skill gap analysis and YouTube course recommendations
+              </p>
+            </div>
 
-      {/* Upload and Input Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Resume Upload
-            </CardTitle>
-            <CardDescription>
-              Upload your PDF resume or paste the text directly
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+            {/* Upload and Input Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Resume Upload
+                  </CardTitle>
+                  <CardDescription>
+                    Upload your PDF resume or paste the text directly
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
               <input
                 type="file"
                 id="resume-upload"
@@ -140,100 +177,100 @@ export default function CareerAdvisor() {
                   PDF, JPG, PNG up to 10MB
                 </p>
               </label>
+                  </div>
+
+                  {uploadMutation.isPending && (
+                    <div className="text-center text-sm text-gray-600 dark:text-gray-300">
+                      Processing your resume...
+                    </div>
+                  )}
+
+                  {uploadError && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{uploadError}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="text-sm text-gray-500 text-center">Or paste text below</div>
+                  
+                  <Textarea
+                    placeholder="Paste your resume text here..."
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    rows={8}
+                    className="resize-none"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Career Goals
+                  </CardTitle>
+                  <CardDescription>
+                    Tell us about your career aspirations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="career-goal">Career Goal *</Label>
+                    <Input
+                      id="career-goal"
+                      placeholder="e.g., Full Stack Developer, Data Scientist, Product Manager"
+                      value={careerGoal}
+                      onChange={(e) => setCareerGoal(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="target-role">Target Role (Optional)</Label>
+                    <Input
+                      id="target-role"
+                      placeholder="e.g., Senior React Developer, ML Engineer"
+                      value={targetRole}
+                      onChange={(e) => setTargetRole(e.target.value)}
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={handleAnalyze}
+                    disabled={!resumeText.trim() || !careerGoal.trim() || analyzeMutation.isPending}
+                    className="w-full"
+                  >
+                    {analyzeMutation.isPending ? 'Analyzing...' : 'Analyze My Resume'}
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
 
-            {uploadMutation.isPending && (
-              <div className="text-center text-sm text-gray-600 dark:text-gray-300">
-                Processing your resume...
-              </div>
-            )}
+            {/* Analysis Results */}
+            {analysisResult && (
+              <div className="space-y-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="h-5 w-5" />
+                      Career Readiness Score
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-4">
+                      <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis.overallScore)}`}>
+                        {analysisResult.analysis.overallScore}%
+                      </div>
+                      <div className="flex-1">
+                        <Progress value={analysisResult.analysis.overallScore} className="h-3" />
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                          {analysisResult.analysis.experience}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            {uploadError && (
-              <Alert variant="destructive">
-                <AlertDescription>{uploadError}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="text-sm text-gray-500 text-center">Or paste text below</div>
-            
-            <Textarea
-              placeholder="Paste your resume text here..."
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-              rows={8}
-              className="resize-none"
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Career Goals
-            </CardTitle>
-            <CardDescription>
-              Tell us about your career aspirations
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="career-goal">Career Goal *</Label>
-              <Input
-                id="career-goal"
-                placeholder="e.g., Full Stack Developer, Data Scientist, Product Manager"
-                value={careerGoal}
-                onChange={(e) => setCareerGoal(e.target.value)}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="target-role">Target Role (Optional)</Label>
-              <Input
-                id="target-role"
-                placeholder="e.g., Senior React Developer, ML Engineer"
-                value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
-              />
-            </div>
-
-            <Button 
-              onClick={handleAnalyze}
-              disabled={!resumeText.trim() || !careerGoal.trim() || analyzeMutation.isPending}
-              className="w-full"
-            >
-              {analyzeMutation.isPending ? 'Analyzing...' : 'Analyze My Resume'}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Analysis Results */}
-      {analysisResult && (
-        <div className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5" />
-                Career Readiness Score
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis.overallScore)}`}>
-                  {analysisResult.analysis.overallScore}%
-                </div>
-                <div className="flex-1">
-                  <Progress value={analysisResult.analysis.overallScore} className="h-3" />
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                    {analysisResult.analysis.experience}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Skills Overview */}
             <Card>
               <CardHeader>
@@ -354,8 +391,11 @@ export default function CareerAdvisor() {
               </div>
             </CardContent>
           </Card>
+            </div>
+          )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
