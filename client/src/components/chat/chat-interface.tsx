@@ -539,7 +539,7 @@ export default function ChatInterface() {
                     key={index}
                     variant="outline"
                     size="sm"
-                    onClick={() => handleSendPredefinedPrompt(prompt)}
+                    onClick={() => sendMessage(prompt)}
                     className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
                   >
                     {prompt}
