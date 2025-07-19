@@ -237,6 +237,7 @@ export default function ChatInterface() {
     },
     onSuccess: (data) => {
       setLoading(false);
+      // Refetch messages to get both user message and AI response from backend
       queryClient.invalidateQueries({ queryKey: ['/api/chat', sessionId, 'messages'] });
     },
     onError: (error) => {
@@ -327,12 +328,6 @@ export default function ChatInterface() {
   // Helper function to send a message directly
   const sendMessage = async (message: string) => {
     if (!message.trim() || isLoading) return;
-
-    // Add user message immediately to UI
-    addMessage({
-      role: "user", 
-      content: message.trim()
-    });
 
     setLoading(true);
     sendMessageMutation.mutate(message.trim());
@@ -515,12 +510,6 @@ export default function ChatInterface() {
 
     const messageText = inputMessage.trim();
     setInputMessage("");
-    
-    // Add user message immediately to UI
-    addMessage({
-      role: "user",
-      content: messageText
-    });
     
     setLoading(true);
     sendMessageMutation.mutate(messageText);
