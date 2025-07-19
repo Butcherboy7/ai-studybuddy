@@ -1,10 +1,12 @@
 import { useAppStore } from "@/store/appStore";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 
 export default function AppSidebar() {
   const { currentView, setCurrentView, clearSession, sessionItems, sidebarCollapsed, toggleSidebar } = useAppStore();
   const { isDark, toggleTheme } = useTheme();
+  const [, setLocation] = useLocation();
 
   const navItems = [
     {
@@ -18,6 +20,12 @@ export default function AppSidebar() {
       label: 'Practice Paper Generator',
       icon: 'fas fa-file-alt',
       view: 'paper-generator' as const
+    },
+    {
+      id: 'career-advisor',
+      label: 'Career Advisor',
+      icon: 'fas fa-briefcase',
+      view: 'career-advisor' as const
     },
     {
       id: 'skills',
@@ -89,7 +97,15 @@ export default function AppSidebar() {
         {navItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => setCurrentView(item.view)}
+            onClick={() => {
+              if (item.view === 'career-advisor') {
+                setLocation('/career-advisor');
+              } else if (item.view === 'welcome') {
+                setLocation('/');
+              } else {
+                setCurrentView(item.view);
+              }
+            }}
             className={cn(
               "w-full flex items-center py-3 text-sm font-medium rounded-xl transition-all duration-300 group relative transform hover:scale-105",
               sidebarCollapsed ? "px-2 justify-center" : "px-4",

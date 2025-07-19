@@ -1,4 +1,5 @@
 import { useAppStore } from "@/store/appStore";
+import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import AppSidebar from "@/components/layout/app-sidebar";
 import Header from "@/components/layout/header";
@@ -6,9 +7,20 @@ import WelcomeScreen from "@/components/welcome/welcome-screen";
 import ChatInterface from "@/components/chat/chat-interface";
 import PaperGenerator from "@/components/paper-generator/paper-generator";
 import SkillsPage from "@/pages/skills";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { currentView, sidebarCollapsed, toggleSidebar } = useAppStore();
+  const { currentView, setCurrentView, sidebarCollapsed, toggleSidebar } = useAppStore();
+  const [location] = useLocation();
+
+  // Sync route with app state
+  useEffect(() => {
+    if (location === '/') {
+      setCurrentView('welcome');
+    } else if (location.startsWith('/career-advisor')) {
+      setCurrentView('career-advisor');
+    }
+  }, [location, setCurrentView]);
 
   const renderMainContent = () => {
     switch (currentView) {

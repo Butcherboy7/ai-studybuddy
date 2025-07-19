@@ -85,6 +85,32 @@ export const paperGenerationRequestSchema = z.object({
   uploadedContent: z.string().optional(),
 });
 
+export const resumeAnalysisRequestSchema = z.object({
+  resumeText: z.string().min(10),
+  careerGoal: z.string().min(3),
+  targetRole: z.string().optional(),
+});
+
+export const skillGapAnalysisSchema = z.object({
+  currentSkills: z.array(z.string()),
+  requiredSkills: z.array(z.string()),
+  skillGaps: z.array(z.string()),
+  experience: z.string(),
+  recommendations: z.array(z.object({
+    skill: z.string(),
+    priority: z.enum(['High', 'Medium', 'Low']),
+    description: z.string(),
+    courses: z.array(z.object({
+      title: z.string(),
+      url: z.string(),
+      channel: z.string(),
+      duration: z.string().optional(),
+      description: z.string().optional(),
+    })),
+  })),
+  overallScore: z.number().min(0).max(100),
+});
+
 // Types
 export type InsertChatSession = z.infer<typeof insertChatSessionSchema>;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
@@ -94,6 +120,8 @@ export type RemoveReaction = z.infer<typeof removeReactionSchema>;
 export type InsertPracticePaper = z.infer<typeof insertPracticepaperSchema>;
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
 export type PaperGenerationRequest = z.infer<typeof paperGenerationRequestSchema>;
+export type ResumeAnalysisRequest = z.infer<typeof resumeAnalysisRequestSchema>;
+export type SkillGapAnalysis = z.infer<typeof skillGapAnalysisSchema>;
 
 export type ChatSession = typeof chatSessions.$inferSelect;
 export type Message = typeof messages.$inferSelect;

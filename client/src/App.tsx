@@ -7,11 +7,13 @@ import { useEffect } from "react";
 import { useAppStore } from "./store/appStore";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Home from "@/pages/home";
+import CareerAdvisor from "@/pages/career-advisor";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/career-advisor" component={CareerAdvisor} />
       <Route>
         <div className="min-h-screen w-full flex items-center justify-center bg-background">
           <div className="text-center">

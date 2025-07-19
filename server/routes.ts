@@ -6,9 +6,11 @@ import { createWorker } from "tesseract.js";
 import { storage } from "./storage";
 import { generateChatResponse, generatePracticeQuestions } from "./services/gemini";
 import { searchEducationalVideo, shouldIncludeVideo } from "./services/youtube";
+import { analyzeResumeForSkillGaps, generateCareerRoadmap } from "./services/resume-analyzer";
 import { 
   chatRequestSchema, 
   paperGenerationRequestSchema,
+  resumeAnalysisRequestSchema,
   insertChatSessionSchema,
   insertMessageSchema,
   insertPracticepaperSchema,
@@ -295,6 +297,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Remove reaction error:", error);
       res.status(500).json({ error: "Failed to remove reaction" });
+    }
+  });
+
+  // Resume analysis and career recommendations
+  app.post("/api/analyze-resume", async (req, res) => {
+    try {
+      const { resumeText, careerGoal, targetRole } = resumeAnalysisRequestSchema.parse(req.body);
+      
+      // Analyze resume for skill gaps
+      const skillGapAnalysis = await analyzeResumeForSkillGaps(resumeText, careerGoal, targetRole);
+      
+      // Generate career roadmap
+      const roadmap = await generateCareerRoadmap(skillGapAnalysis, careerGoal);
+      
+      res.json({
+        analysis: skillGapAnalysis,
+        roadmap,
+        success: true
+      });
+      
+    } catch (error) {
+      console.error("Resume analysis error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const statusCode = errorMessage.includes("validation") ? 400 : 500;
+      
+      res.status(statusCode).json({ 
+        error: "Failed to analyze resume",
+        details: errorMessage
+      });
     }
   });
 
