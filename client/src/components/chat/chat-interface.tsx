@@ -553,6 +553,21 @@ export default function ChatInterface() {
     }
   }, [inputMessage]);
 
+  // Listen for welcome screen messages
+  useEffect(() => {
+    const handleWelcomeMessage = (event: CustomEvent) => {
+      const message = event.detail.message;
+      if (message && !isLoading) {
+        sendMessage(message);
+      }
+    };
+
+    window.addEventListener('sendWelcomeMessage', handleWelcomeMessage as EventListener);
+    return () => {
+      window.removeEventListener('sendWelcomeMessage', handleWelcomeMessage as EventListener);
+    };
+  }, [isLoading]);
+
   if (!selectedTutor) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
@@ -641,7 +656,7 @@ export default function ChatInterface() {
                   key={index}
                   variant="outline"
                   size="sm"
-                  onClick={() => setInputMessage(prompt)}
+                  onClick={() => sendMessage(prompt)}
                   className="text-xs h-8 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all text-left justify-start"
                   disabled={isLoading}
                 >
@@ -712,8 +727,9 @@ export default function ChatInterface() {
                 key={index}
                 variant="outline"
                 size="sm"
-                onClick={() => setInputMessage(action)}
+                onClick={() => sendMessage(action)}
                 className="text-xs h-6 px-2.5 bg-background hover:bg-primary hover:text-primary-foreground transition-all rounded-full"
+                disabled={isLoading}
               >
                 {action}
               </Button>

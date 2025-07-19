@@ -148,17 +148,13 @@ export default function WelcomeScreen() {
                         key={index}
                         onClick={() => {
                           setCurrentView('chat');
-                          // Set initial message but don't auto-send - let user review and send
+                          // Set the initial message for immediate sending
                           setTimeout(() => {
-                            const messageInput = document.querySelector('textarea[placeholder*="Ask me anything"]') as HTMLTextAreaElement;
-                            if (messageInput) {
-                              messageInput.value = prompt;
-                              messageInput.focus();
-                              // Trigger the input event to update React state
-                              const event = new Event('input', { bubbles: true });
-                              messageInput.dispatchEvent(event);
-                            }
-                          }, 100);
+                            // Trigger a custom event that the chat component can listen to
+                            window.dispatchEvent(new CustomEvent('sendWelcomeMessage', { 
+                              detail: { message: prompt } 
+                            }));
+                          }, 200);
                         }}
                         className="text-xs h-8 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all text-left justify-start border border-border rounded-md"
                       >
