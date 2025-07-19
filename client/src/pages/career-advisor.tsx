@@ -251,7 +251,7 @@ export default function CareerAdvisor() {
             </div>
 
             {/* Analysis Results */}
-            {analysisResult && (
+            {analysisResult && analysisResult.analysis && (
               <div className="space-y-8">
                 <Card>
                   <CardHeader>
@@ -262,13 +262,13 @@ export default function CareerAdvisor() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-4">
-                      <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis.overallScore)}`}>
-                        {analysisResult.analysis.overallScore}%
+                      <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis.overallScore || 0)}`}>
+                        {analysisResult.analysis.overallScore || 0}%
                       </div>
                       <div className="flex-1">
-                        <Progress value={analysisResult.analysis.overallScore} className="h-3" />
+                        <Progress value={analysisResult.analysis.overallScore || 0} className="h-3" />
                         <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                          {analysisResult.analysis.experience}
+                          {analysisResult.analysis.experience || 'Analysis in progress...'}
                         </p>
                       </div>
                     </div>
@@ -284,10 +284,10 @@ export default function CareerAdvisor() {
               <CardContent className="space-y-4">
                 <div>
                   <h4 className="font-medium text-green-700 dark:text-green-400 mb-2">
-                    Current Skills ({analysisResult.analysis.currentSkills.length})
+                    Current Skills ({analysisResult.analysis.currentSkills?.length || 0})
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {analysisResult.analysis.currentSkills.map((skill, index) => (
+                    {(analysisResult.analysis.currentSkills || []).map((skill, index) => (
                       <Badge key={index} variant="secondary">
                         {skill}
                       </Badge>
@@ -299,10 +299,10 @@ export default function CareerAdvisor() {
 
                 <div>
                   <h4 className="font-medium text-red-700 dark:text-red-400 mb-2">
-                    Skill Gaps ({analysisResult.analysis.skillGaps.length})
+                    Skill Gaps ({analysisResult.analysis.skillGaps?.length || 0})
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {analysisResult.analysis.skillGaps.map((skill, index) => (
+                    {(analysisResult.analysis.skillGaps || []).map((skill, index) => (
                       <Badge key={index} variant="destructive">
                         {skill}
                       </Badge>
@@ -319,7 +319,7 @@ export default function CareerAdvisor() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {analysisResult.analysis.recommendations.map((rec, index) => (
+                  {(analysisResult.analysis.recommendations || []).map((rec, index) => (
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="font-medium">{rec.skill}</h5>
@@ -394,14 +394,14 @@ export default function CareerAdvisor() {
             <CardContent>
               <div className="space-y-6">
                 {/* High Priority Skills */}
-                {analysisResult.analysis.recommendations.filter(rec => rec.priority === 'High').length > 0 && (
+                {(analysisResult.analysis.recommendations || []).filter(rec => rec.priority === 'High').length > 0 && (
                   <div>
                     <h4 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-4 flex items-center gap-2">
                       <AlertCircle className="h-5 w-5" />
                       High Priority Skills (Start Here!)
                     </h4>
                     <div className="grid gap-4">
-                      {analysisResult.analysis.recommendations
+                      {(analysisResult.analysis.recommendations || [])
                         .filter(rec => rec.priority === 'High')
                         .map((rec, index) => (
                           <div key={index} className="border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4 rounded-r-lg">
@@ -464,14 +464,14 @@ export default function CareerAdvisor() {
                 )}
 
                 {/* Medium Priority Skills */}
-                {analysisResult.analysis.recommendations.filter(rec => rec.priority === 'Medium').length > 0 && (
+                {(analysisResult.analysis.recommendations || []).filter(rec => rec.priority === 'Medium').length > 0 && (
                   <div>
                     <h4 className="text-lg font-semibold text-yellow-700 dark:text-yellow-400 mb-4 flex items-center gap-2">
                       <Clock className="h-5 w-5" />
                       Medium Priority Skills (Next Phase)
                     </h4>
                     <div className="grid gap-4">
-                      {analysisResult.analysis.recommendations
+                      {(analysisResult.analysis.recommendations || [])
                         .filter(rec => rec.priority === 'Medium')
                         .map((rec, index) => (
                           <div key={index} className="border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-r-lg">
@@ -510,14 +510,14 @@ export default function CareerAdvisor() {
                 )}
 
                 {/* Low Priority Skills */}
-                {analysisResult.analysis.recommendations.filter(rec => rec.priority === 'Low').length > 0 && (
+                {(analysisResult.analysis.recommendations || []).filter(rec => rec.priority === 'Low').length > 0 && (
                   <div>
                     <h4 className="text-lg font-semibold text-green-700 dark:text-green-400 mb-4 flex items-center gap-2">
                       <CheckCircle className="h-5 w-5" />
                       Low Priority Skills (Future Enhancement)
                     </h4>
                     <div className="grid gap-3">
-                      {analysisResult.analysis.recommendations
+                      {(analysisResult.analysis.recommendations || [])
                         .filter(rec => rec.priority === 'Low')
                         .map((rec, index) => (
                           <div key={index} className="border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-3 rounded-r-lg">
