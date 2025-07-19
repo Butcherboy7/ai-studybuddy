@@ -505,14 +505,8 @@ export default function ChatInterface() {
     const messageText = inputMessage.trim();
     setInputMessage("");
     
-    // Add user message immediately
-    addMessage({
-      role: "user",
-      content: messageText
-    });
-
-    setLoading(true);
-    sendMessageMutation.mutate(messageText);
+    // Use the existing sendMessage function to avoid duplication
+    await sendMessage(messageText);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
