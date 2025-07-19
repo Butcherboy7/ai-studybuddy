@@ -566,7 +566,7 @@ export default function ChatInterface() {
 
   return (
     <div className="flex-1 flex flex-col bg-background">
-      {/* Chat Header with Mode Switcher - Combined with empty state */}
+      {/* Chat Header with Mode Switcher - Combined with empty state and prompts */}
       <div className={`bg-card border-b border-border ${messages.length === 0 ? 'px-4 py-6' : 'px-4 py-2'}`}>
         <div className={`flex ${messages.length === 0 ? 'flex-col items-center space-y-4' : 'items-center justify-between'}`}>
           <div className={`flex items-center ${messages.length === 0 ? 'flex-col space-y-2' : ''}`}>
@@ -578,64 +578,63 @@ export default function ChatInterface() {
               <p className={`text-muted-foreground leading-tight ${messages.length === 0 ? 'text-sm' : 'text-xs'}`}>{selectedTutor.specialization}</p>
             </div>
           </div>
-          <div className="flex items-center space-x-1">
-            {/* Mode Switcher Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-7">
-                  <i className="fas fa-exchange-alt mr-1"></i>
-                  <span className="hidden sm:inline">Switch</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {tutorPersonas.map((tutor) => (
-                  <DropdownMenuItem
-                    key={tutor.id}
-                    onClick={() => setSelectedTutor(tutor)}
-                    className="flex items-center"
-                  >
-                    <div className={`w-6 h-6 bg-gradient-to-br ${tutor.color} rounded flex items-center justify-center mr-3`}>
-                      <i className={`${tutor.icon} text-white text-xs`}></i>
-                    </div>
-                    <div>
-                      <div className="font-medium">{tutor.name}</div>
-                      <div className="text-xs text-muted-foreground">{tutor.specialization.split(' • ')[0]}</div>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearChat}
-              className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
-              title="Clear chat"
-            >
-              <i className="fas fa-trash text-xs"></i>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleExportChat}
-              className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
-              title="Export chat"
-            >
-              <i className="fas fa-download text-xs"></i>
-            </Button>
-          </div>
+          
+          {/* Show action buttons only when there are messages */}
+          {messages.length > 0 && (
+            <div className="flex items-center space-x-1">
+              {/* Mode Switcher Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-7">
+                    <i className="fas fa-exchange-alt mr-1"></i>
+                    <span className="hidden sm:inline">Switch</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {tutorPersonas.map((tutor) => (
+                    <DropdownMenuItem
+                      key={tutor.id}
+                      onClick={() => setSelectedTutor(tutor)}
+                      className="flex items-center"
+                    >
+                      <div className={`w-6 h-6 bg-gradient-to-br ${tutor.color} rounded flex items-center justify-center mr-3`}>
+                        <i className={`${tutor.icon} text-white text-xs`}></i>
+                      </div>
+                      <div>
+                        <div className="font-medium">{tutor.name}</div>
+                        <div className="text-xs text-muted-foreground">{tutor.specialization.split(' • ')[0]}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearChat}
+                className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
+                title="Clear chat"
+              >
+                <i className="fas fa-trash text-xs"></i>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleExportChat}
+                className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
+                title="Export chat"
+              >
+                <i className="fas fa-download text-xs"></i>
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
-
-
-
-      {/* Chat Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-background chat-messages-container relative">
-        {/* Get started prompts - only show when no messages */}
+        
+        {/* Get started prompts - integrated into header when no messages */}
         {messages.length === 0 && (
-          <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-            <h4 className="text-sm font-semibold text-foreground mb-3">Get started with these questions:</h4>
+          <div className="mt-6 max-w-2xl mx-auto">
+            <h4 className="text-sm font-semibold text-foreground mb-3 text-center">Get started with these questions:</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {getPredefinedPrompts().map((prompt, index) => (
                 <Button
@@ -652,6 +651,12 @@ export default function ChatInterface() {
             </div>
           </div>
         )}
+      </div>
+
+
+
+      {/* Chat Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-background chat-messages-container relative">
 
 
         
