@@ -145,12 +145,11 @@ export async function generatePracticeQuestions(
       : `Generate practice questions for this educational content about ${topic} in ${subject}.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
-      config: {
-        systemInstruction: systemPrompt,
+      model: "gemini-2.5-flash",
+      contents: systemPrompt + "\n\n" + contentPrompt,
+      generationConfig: {
         responseMimeType: "application/json",
       },
-      contents: contentPrompt,
     });
 
     const rawJson = response.text;

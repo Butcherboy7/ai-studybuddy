@@ -146,6 +146,14 @@ Project setup: GitHub-friendly with proper documentation and easy deployment.
 - **Session Persistence**: Tracks whether user has selected a tutor to improve navigation flow
 - **UI Improvements**: Enhanced chat header with tutor switching dropdown and study mode controls
 
+### Practice Paper Generator Enhancements (January 19, 2025)
+- **Fixed AI Generation**: Resolved Gemini API integration issues for practice question generation
+- **Smart PDF Processing**: Enhanced AI to generate questions from any PDF content using intelligent text extraction
+- **Improved File Upload**: Better UI for file uploads with drag-and-drop styling and progress indicators
+- **Content-Based Questions**: AI now creates contextual questions based on uploaded study materials
+- **Enhanced OCR Support**: Automatic text extraction from PDFs and images for question generation
+- **Professional Theming**: Updated UI to use proper theme variables for consistent dark/light mode support
+
 ### Migration to Standard Replit Environment (Latest)
 - **Platform Migration**: Successfully migrated from Replit Agent to standard Replit environment
 - **API Integration**: Configured GEMINI_API_KEY and YOUTUBE_API_KEY for full functionality
