@@ -9,13 +9,13 @@ export default function MessageBubble({ message, tutorPersona }: MessageBubblePr
   const isUser = message.role === 'user';
 
   return (
-    <div className="flex items-start space-x-3">
-      <div className={`w-8 h-8 ${isUser ? 'bg-muted dark:bg-muted' : `bg-gradient-to-br ${tutorPersona.color}`} rounded-full flex items-center justify-center flex-shrink-0`}>
-        <i className={`${isUser ? 'fas fa-user text-muted-foreground' : 'fas fa-graduation-cap text-white'} text-xs`}></i>
+    <div className={`flex items-start space-x-3 ${isUser ? 'flex-row-reverse' : ''}`}>
+      <div className={`w-8 h-8 ${isUser ? 'bg-primary' : `bg-gradient-to-br ${tutorPersona.color}`} rounded-full flex items-center justify-center flex-shrink-0`}>
+        <i className={`${isUser ? 'fas fa-user text-primary-foreground' : 'fas fa-graduation-cap text-white'} text-xs`}></i>
       </div>
-      <div className="flex-1">
-        <div className={`${isUser ? 'bg-primary/10 border-primary/20 dark:bg-primary/10 dark:border-primary/30' : 'bg-card dark:bg-card border-border dark:border-border'} rounded-lg border p-4 shadow-sm`}>
-          <p className="text-foreground dark:text-foreground whitespace-pre-wrap">{message.content}</p>
+      <div className={`flex-1 ${isUser ? 'flex justify-end' : ''}`}>
+        <div className={`${isUser ? 'bg-primary text-primary-foreground' : 'bg-card border-border'} rounded-lg ${!isUser ? 'border' : ''} p-4 shadow-sm ${isUser ? 'max-w-[80%]' : ''}`}>
+          <p className={`${isUser ? 'text-primary-foreground' : 'text-foreground'} whitespace-pre-wrap`}>{message.content}</p>
         </div>
         
         {/* YouTube Video Integration */}

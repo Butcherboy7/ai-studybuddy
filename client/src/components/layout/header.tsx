@@ -19,16 +19,6 @@ export default function Header() {
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* Session indicator */}
-        {sessionItems.length > 0 && (
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-primary/10">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-sm font-medium text-primary">
-              {sessionItems.length} activities
-            </span>
-          </div>
-        )}
-
         {/* Settings dropdown */}
         <Dropdown
           trigger={

@@ -28,7 +28,6 @@ export default function ChatInterface() {
   
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -96,13 +95,17 @@ export default function ChatInterface() {
         setIsListening(false);
       };
 
-      recognitionRef.current.onerror = () => {
+      recognitionRef.current.onerror = (event: any) => {
         setIsListening(false);
-        toast({
-          title: "Voice Recognition Error",
-          description: "Please try again or type your message.",
-          variant: "destructive"
-        });
+        console.log('Voice recognition error:', event.error);
+        // Only show toast for actual errors, not for "no-speech" or "aborted"
+        if (event.error !== 'no-speech' && event.error !== 'aborted') {
+          toast({
+            title: "Voice Recognition Error",
+            description: `${event.error || 'Unknown error'}. Please try again or type your message.`,
+            variant: "destructive"
+          });
+        }
       };
 
       recognitionRef.current.onend = () => {
@@ -179,9 +182,28 @@ export default function ChatInterface() {
 
   // Voice recognition functions
   const startListening = () => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      toast({
+        title: "Voice Recognition Not Supported",
+        description: "Your browser doesn't support voice recognition. Please type your message.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (recognitionRef.current && !isListening) {
-      setIsListening(true);
-      recognitionRef.current.start();
+      try {
+        setIsListening(true);
+        recognitionRef.current.start();
+      } catch (error) {
+        console.log('Error starting recognition:', error);
+        setIsListening(false);
+        toast({
+          title: "Voice Recognition Error",
+          description: "Could not start voice recognition. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -198,23 +220,13 @@ export default function ChatInterface() {
     textareaRef.current?.focus();
   };
 
-  // Typing indicator
-  useEffect(() => {
-    if (inputMessage.length > 0) {
-      setIsTyping(true);
-      const timer = setTimeout(() => setIsTyping(false), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setIsTyping(false);
-    }
-  }, [inputMessage]);
+  // Remove the typing indicator for user input - we only want it for AI responses
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
     const messageText = inputMessage.trim();
     setInputMessage("");
-    setIsTyping(false);
     
     // Add user message immediately
     addMessage({
@@ -388,36 +400,27 @@ export default function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Predefined Prompts - Right above input */}
-      <div className="px-4 py-2 bg-muted/30 border-t border-border">
-        <div className="flex flex-wrap gap-2">
-          {getPredefinedPrompts().map((prompt, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              size="sm"
-              onClick={() => handlePredefinedPrompt(prompt)}
-              className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
-            >
-              {prompt}
-            </Button>
-          ))}
+      {/* Predefined Prompts - Show only after first AI response and hide when loading */}
+      {messages.some(msg => msg.role === 'assistant') && !isLoading && (
+        <div className="px-4 py-2 bg-muted/30 border-t border-border">
+          <div className="flex flex-wrap gap-2">
+            {getPredefinedPrompts().map((prompt, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                onClick={() => handlePredefinedPrompt(prompt)}
+                className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
+              >
+                {prompt}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Chat Input */}
       <div className="bg-card border-t border-border p-4">
-        {/* Typing Indicator */}
-        {isTyping && (
-          <div className="flex items-center space-x-2 mb-2 text-sm text-muted-foreground">
-            <div className="animate-pulse flex space-x-1">
-              <div className="w-1 h-1 bg-primary rounded-full animate-bounce"></div>
-              <div className="w-1 h-1 bg-primary rounded-full animate-bounce delay-75"></div>
-              <div className="w-1 h-1 bg-primary rounded-full animate-bounce delay-150"></div>
-            </div>
-            <span>Typing...</span>
-          </div>
-        )}
 
         <div className="flex items-end space-x-3">
           <div className="flex-1 relative">
