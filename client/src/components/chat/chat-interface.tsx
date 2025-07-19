@@ -247,9 +247,16 @@ export default function ChatInterface() {
     onError: (error) => {
       console.error("Chat error:", error);
       setLoading(false);
+      
+      // Provide more specific error handling
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const isNetworkError = errorMessage.includes('fetch') || errorMessage.includes('network');
+      
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: isNetworkError ? "Connection Error" : "Message Failed",
+        description: isNetworkError 
+          ? "Unable to connect to the server. Please check your internet connection and try again."
+          : "Failed to send message. Please try again or refresh the page if the problem persists.",
         variant: "destructive"
       });
     }
@@ -291,10 +298,18 @@ export default function ChatInterface() {
         console.log('Error starting recognition:', error);
         setIsListening(false);
         
-        // Provide fallback guidance
+        // Provide more specific guidance based on error type
+        const errorMessage = error instanceof Error ? error.message : "";
+        const isPermissionError = errorMessage.includes('permission') || errorMessage.includes('denied');
+        const isNotSupportedError = errorMessage.includes('not supported') || errorMessage.includes('SpeechRecognition');
+        
         toast({
-          title: "Voice Recognition Error",
-          description: "Could not start voice recognition. Please ensure your microphone is connected and try again, or type your message.",
+          title: isNotSupportedError ? "Feature Not Supported" : isPermissionError ? "Microphone Permission Required" : "Voice Recognition Error",
+          description: isNotSupportedError 
+            ? "Voice recognition is not supported in this browser. Please try Chrome, Firefox, or Edge."
+            : isPermissionError 
+            ? "Please allow microphone access in your browser settings to use voice input."
+            : "Could not start voice recognition. Please ensure your microphone is connected and try again, or type your message.",
           variant: "destructive"
         });
       }
@@ -416,9 +431,18 @@ export default function ChatInterface() {
 
     } catch (error) {
       console.error('File processing error:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : "";
+      const isCorruptedFile = errorMessage.includes('corrupt') || errorMessage.includes('invalid');
+      const isMemoryError = errorMessage.includes('memory') || errorMessage.includes('allocation');
+      
       toast({
         title: "Processing Error",
-        description: "Failed to process the file. Please try again.",
+        description: isCorruptedFile 
+          ? "The file appears to be corrupted or invalid. Please try a different file."
+          : isMemoryError 
+          ? "The file is too complex to process. Please try a smaller or simpler file."
+          : "Failed to process the file. Please ensure it's a valid PDF or image file and try again.",
         variant: "destructive"
       });
     } finally {

@@ -191,9 +191,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Chat API error:", error);
-      res.status(500).json({ 
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const statusCode = errorMessage.includes("validation") ? 400 : 
+                        errorMessage.includes("rate limit") ? 429 : 500;
+      
+      res.status(statusCode).json({ 
         error: "Failed to process chat message",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: errorMessage
       });
     }
   });
@@ -225,6 +229,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         uploadedContent
       );
 
+      // Validate generated questions
+      if (!questions || !Array.isArray(questions) || questions.length === 0) {
+        throw new Error("Failed to generate valid practice questions");
+      }
+
       const practicePaper = await storage.createPracticePaper({
         sessionId,
         subject,
@@ -237,9 +246,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(practicePaper);
     } catch (error) {
       console.error("Practice paper generation error:", error);
-      res.status(500).json({ 
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const statusCode = errorMessage.includes("validation") ? 400 : 500;
+      
+      res.status(statusCode).json({ 
         error: "Failed to generate practice paper",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: errorMessage
       });
     }
   });

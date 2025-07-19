@@ -71,9 +71,18 @@ export default function PaperGenerator() {
     },
     onError: (error) => {
       console.error("Upload error:", error);
+      
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const isFileSizeError = errorMessage.includes('size') || errorMessage.includes('large');
+      const isFileTypeError = errorMessage.includes('type') || errorMessage.includes('format');
+      
       toast({
         title: "Upload Failed",
-        description: "Failed to process the file. Please try again.",
+        description: isFileSizeError 
+          ? "File is too large. Please use a file smaller than 10MB."
+          : isFileTypeError 
+          ? "Unsupported file format. Please upload a PDF or image file."
+          : "Failed to process the file. Please check the file and try again.",
         variant: "destructive"
       });
     },
@@ -108,9 +117,18 @@ export default function PaperGenerator() {
     },
     onError: (error) => {
       console.error("Paper generation error:", error);
+      
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const isNetworkError = errorMessage.includes('fetch') || errorMessage.includes('network');
+      const isValidationError = errorMessage.includes('validation') || errorMessage.includes('invalid');
+      
       toast({
-        title: "Error",
-        description: "Failed to generate practice paper. Please try again.",
+        title: isNetworkError ? "Connection Error" : isValidationError ? "Invalid Input" : "Generation Failed",
+        description: isNetworkError 
+          ? "Unable to connect to the AI service. Please check your internet connection."
+          : isValidationError 
+          ? "Please check your inputs and try again."
+          : "Failed to generate practice paper. Please verify your inputs and try again.",
         variant: "destructive"
       });
     }

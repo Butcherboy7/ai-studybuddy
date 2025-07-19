@@ -147,9 +147,18 @@ export default function WelcomeScreen() {
                       <button
                         key={index}
                         onClick={() => {
-                          // Add message and switch to chat view
                           setCurrentView('chat');
-                          // Handle sending the message (this would need to be connected to the chat system)
+                          // Set initial message but don't auto-send - let user review and send
+                          setTimeout(() => {
+                            const messageInput = document.querySelector('textarea[placeholder*="Ask me anything"]') as HTMLTextAreaElement;
+                            if (messageInput) {
+                              messageInput.value = prompt;
+                              messageInput.focus();
+                              // Trigger the input event to update React state
+                              const event = new Event('input', { bubbles: true });
+                              messageInput.dispatchEvent(event);
+                            }
+                          }, 100);
                         }}
                         className="text-xs h-8 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all text-left justify-start border border-border rounded-md"
                       >
