@@ -311,44 +311,37 @@ export default function PaperGenerator() {
       </div>
 
       <div className="grid gap-6">
-        {/* Topic Input */}
+        {/* Topic Input - Compact Design */}
         <Card>
-          <CardHeader>
-            <CardTitle>Enter Topic</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Specify the topic you want to practice
-            </p>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Enter Topic</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="topic">Topic</Label>
-                <Textarea
-                  id="topic"
-                  value={config.topic}
-                  onChange={(e) => setConfig(prev => ({ ...prev, topic: e.target.value }))}
-                  placeholder="e.g., Quadratic equations, Photosynthesis, World War II, etc."
-                  className="min-h-[80px]"
-                />
-              </div>
+            <div>
+              <Label htmlFor="topic" className="text-sm font-medium">What would you like to practice?</Label>
+              <Input
+                id="topic"
+                value={config.topic}
+                onChange={(e) => setConfig(prev => ({ ...prev, topic: e.target.value }))}
+                placeholder="e.g., Quadratic equations, Photosynthesis, World War II..."
+                className="mt-2"
+              />
             </div>
           </CardContent>
         </Card>
 
-        {/* Paper Configuration */}
+        {/* Paper Configuration - Compact Layout */}
         <Card>
-          <CardHeader>
-            <CardTitle>Paper Settings</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Configure your practice paper preferences
-            </p>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Paper Settings</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="space-y-6">
+            {/* Main Settings Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <Label htmlFor="subject">Subject</Label>
+                <Label htmlFor="subject" className="text-sm">Subject</Label>
                 <Select value={config.subject} onValueChange={(value) => setConfig(prev => ({ ...prev, subject: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -360,9 +353,9 @@ export default function PaperGenerator() {
               </div>
 
               <div>
-                <Label htmlFor="difficulty">Difficulty</Label>
+                <Label htmlFor="difficulty" className="text-sm">Difficulty</Label>
                 <Select value={config.difficulty} onValueChange={(value) => setConfig(prev => ({ ...prev, difficulty: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -374,7 +367,7 @@ export default function PaperGenerator() {
               </div>
 
               <div>
-                <Label htmlFor="questionCount">Number of Questions</Label>
+                <Label htmlFor="questionCount" className="text-sm">Questions</Label>
                 <Input
                   id="questionCount"
                   type="number"
@@ -382,11 +375,12 @@ export default function PaperGenerator() {
                   max="50"
                   value={config.questionCount}
                   onChange={(e) => setConfig(prev => ({ ...prev, questionCount: parseInt(e.target.value) || 10 }))}
+                  className="mt-1"
                 />
               </div>
 
               <div>
-                <Label htmlFor="timeLimit">Time Limit (minutes)</Label>
+                <Label htmlFor="timeLimit" className="text-sm">Time (min)</Label>
                 <Input
                   id="timeLimit"
                   type="number"
@@ -394,13 +388,15 @@ export default function PaperGenerator() {
                   max="300"
                   value={config.timeLimit}
                   onChange={(e) => setConfig(prev => ({ ...prev, timeLimit: parseInt(e.target.value) || 60 }))}
+                  className="mt-1"
                 />
               </div>
             </div>
 
-            <div className="mt-6">
-              <Label>Question Types</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+            {/* Question Types */}
+            <div>
+              <Label className="text-sm font-medium">Question Types</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                 {questionTypeOptions.map(type => (
                   <div key={type} className="flex items-center space-x-2">
                     <Checkbox
@@ -408,7 +404,7 @@ export default function PaperGenerator() {
                       checked={config.questionTypes.includes(type)}
                       onCheckedChange={(checked) => updateQuestionTypes(type, checked as boolean)}
                     />
-                    <Label htmlFor={type} className="text-sm">{type}</Label>
+                    <Label htmlFor={type} className="text-xs">{type}</Label>
                   </div>
                 ))}
               </div>
