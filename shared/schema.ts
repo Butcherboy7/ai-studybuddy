@@ -68,6 +68,7 @@ export const paperGenerationRequestSchema = z.object({
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced', 'Mixed']),
   questionCount: z.number().min(5).max(50),
   questionTypes: z.array(z.string()).min(1),
+  uploadedContent: z.string().optional(),
 });
 
 // Types

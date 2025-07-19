@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAppStore } from "@/store/appStore";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PaperConfig {
   subject: string;
@@ -17,11 +18,13 @@ interface PaperConfig {
   questionCount: number;
   timeLimit: number;
   questionTypes: string[];
+  uploadedContent?: string;
 }
 
 export default function PaperGenerator() {
   const { sessionId, addSessionItem } = useAppStore();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [config, setConfig] = useState<PaperConfig>({
     subject: 'Mathematics',
@@ -33,6 +36,51 @@ export default function PaperGenerator() {
   });
 
   const [generatedPaper, setGeneratedPaper] = useState<any>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string>('');
+  const [extractedText, setExtractedText] = useState<string>('');
+
+  // File upload mutation
+  const uploadFileMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('/api/upload/resume', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setExtractedText(data.extractedText || '');
+      setConfig(prev => ({ 
+        ...prev, 
+        uploadedContent: data.extractedText || '',
+        topic: prev.topic || 'Content from uploaded file'
+      }));
+      toast({
+        title: "File Processed",
+        description: "Text extracted successfully from your file!",
+      });
+    },
+    onError: (error) => {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to process the file. Please try again.",
+        variant: "destructive"
+      });
+    },
+    onSettled: () => {
+      setIsUploading(false);
+    }
+  });
 
   const generatePaperMutation = useMutation({
     mutationFn: async (paperConfig: PaperConfig) => {
@@ -42,7 +90,8 @@ export default function PaperGenerator() {
         topic: paperConfig.topic,
         difficulty: paperConfig.difficulty,
         questionCount: paperConfig.questionCount,
-        questionTypes: paperConfig.questionTypes
+        questionTypes: paperConfig.questionTypes,
+        uploadedContent: paperConfig.uploadedContent
       });
       return response.json();
     },
@@ -67,11 +116,42 @@ export default function PaperGenerator() {
     }
   });
 
-  const handleGeneratePaper = () => {
-    if (!config.topic.trim()) {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/tiff'];
+    if (!allowedTypes.includes(file.type)) {
       toast({
-        title: "Missing Topic",
-        description: "Please enter a topic for the practice paper.",
+        title: "Invalid File Type",
+        description: "Please upload a PDF or image file (PNG, JPG, JPEG, GIF, BMP, TIFF).",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload a file smaller than 10MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadedFileName(file.name);
+    uploadFileMutation.mutate(file);
+  };
+
+  const handleGeneratePaper = () => {
+    if (!config.topic.trim() && !extractedText.trim()) {
+      toast({
+        title: "Missing Content",
+        description: "Please enter a topic or upload a file for the practice paper.",
         variant: "destructive"
       });
       return;
@@ -84,6 +164,15 @@ export default function PaperGenerator() {
       title: "Preview",
       description: "Preview functionality would show sample questions.",
     });
+  };
+
+  const clearUploadedFile = () => {
+    setExtractedText('');
+    setUploadedFileName('');
+    setConfig(prev => ({ ...prev, uploadedContent: undefined }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const updateQuestionTypes = (type: string, checked: boolean) => {
@@ -144,6 +233,96 @@ export default function PaperGenerator() {
                     onChange={(e) => setConfig(prev => ({ ...prev, topic: e.target.value }))}
                     placeholder="e.g., Quadratic Equations"
                   />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* File Upload Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Upload Study Material</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Upload PDF documents or images to generate questions based on your study material
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,.png,.jpg,.jpeg,.gif,.bmp,.tiff"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                    <Button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      variant="outline"
+                      className="w-full h-12 border-dashed border-2 hover:border-primary/50"
+                    >
+                      {isUploading ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin mr-2"></i>
+                          Processing {uploadedFileName}...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-upload mr-2"></i>
+                          Upload PDF or Image
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {uploadedFileName && !isUploading && (
+                    <Button
+                      onClick={clearUploadedFile}
+                      variant="outline"
+                      size="sm"
+                      className="self-start"
+                    >
+                      <i className="fas fa-times mr-1"></i>
+                      Clear
+                    </Button>
+                  )}
+                </div>
+                
+                {uploadedFileName && !isUploading && (
+                  <div className="flex items-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <i className="fas fa-check-circle text-green-600 dark:text-green-400 mr-2"></i>
+                    <span className="text-sm text-green-700 dark:text-green-300">
+                      Successfully processed: {uploadedFileName}
+                    </span>
+                  </div>
+                )}
+
+                {extractedText && (
+                  <div className="space-y-2">
+                    <Label htmlFor="extracted-text">Extracted Content:</Label>
+                    <Textarea
+                      id="extracted-text"
+                      value={extractedText}
+                      onChange={(e) => {
+                        setExtractedText(e.target.value);
+                        setConfig(prev => ({ ...prev, uploadedContent: e.target.value }));
+                      }}
+                      placeholder="Extracted text will appear here..."
+                      className="min-h-[100px] max-h-[200px] text-sm"
+                      rows={5}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      You can edit the extracted text before generating questions
+                    </p>
+                  </div>
+                )}
+
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p><strong>Supported formats:</strong> PDF files and images (PNG, JPG, JPEG, GIF, BMP, TIFF)</p>
+                  <p><strong>File size limit:</strong> 10MB maximum</p>
+                  <p><strong>OCR Support:</strong> Text will be automatically extracted from images and PDFs</p>
                 </div>
               </div>
             </CardContent>

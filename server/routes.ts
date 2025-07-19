@@ -213,7 +213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate practice paper
   app.post("/api/practice-paper", async (req, res) => {
     try {
-      const { sessionId, subject, topic, difficulty, questionCount, questionTypes } = 
+      const { sessionId, subject, topic, difficulty, questionCount, questionTypes, uploadedContent } = 
         paperGenerationRequestSchema.parse(req.body);
 
       const questions = await generatePracticeQuestions(
@@ -221,7 +221,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         topic, 
         difficulty, 
         questionCount, 
-        questionTypes
+        questionTypes,
+        uploadedContent
       );
 
       const practicePaper = await storage.createPracticePaper({

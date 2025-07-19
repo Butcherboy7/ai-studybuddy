@@ -107,14 +107,24 @@ export async function generatePracticeQuestions(
   topic: string,
   difficulty: string,
   questionCount: number,
-  questionTypes: string[]
+  questionTypes: string[],
+  uploadedContent?: string
 ): Promise<any[]> {
   try {
+    const hasUploadedContent = uploadedContent && uploadedContent.trim().length > 0;
+    
     const systemPrompt = `You are an expert educational content creator. Generate ${questionCount} practice questions for:
     Subject: ${subject}
     Topic: ${topic}
     Difficulty: ${difficulty}
     Question types: ${questionTypes.join(', ')}
+    
+    ${hasUploadedContent ? `
+    IMPORTANT: Base the questions on the following uploaded content:
+    "${uploadedContent}"
+    
+    Generate questions that test understanding of the concepts, facts, and information from this specific content.
+    ` : ''}
     
     Return a JSON array of questions with this exact format:
     [
@@ -129,13 +139,17 @@ export async function generatePracticeQuestions(
       }
     ]`;
 
+    const contentPrompt = hasUploadedContent 
+      ? `Generate practice questions based on the uploaded content provided in the system prompt. Focus on testing comprehension, analysis, and application of the material.`
+      : `Generate practice questions for this educational content about ${topic} in ${subject}.`;
+
     const response = await ai.models.generateContent({
       model: "gemini-2.5-pro",
       config: {
         systemInstruction: systemPrompt,
         responseMimeType: "application/json",
       },
-      contents: `Generate practice questions for this educational content.`,
+      contents: contentPrompt,
     });
 
     const rawJson = response.text;
