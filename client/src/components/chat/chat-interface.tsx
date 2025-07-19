@@ -172,7 +172,20 @@ export default function ChatInterface() {
     } else {
       console.log('Speech recognition not supported in this browser');
     }
-  }, [toast]);
+
+    // Custom event listener for message sending from action buttons
+    const handleSendMessage = (event: CustomEvent) => {
+      if (event.detail && typeof event.detail === 'string') {
+        sendMessage(event.detail);
+      }
+    };
+
+    window.addEventListener('sendMessage', handleSendMessage as EventListener);
+    
+    return () => {
+      window.removeEventListener('sendMessage', handleSendMessage as EventListener);
+    };
+  }, [toast, sendMessage]);
 
   // Load existing messages for the session
   const { data: existingMessages } = useQuery({

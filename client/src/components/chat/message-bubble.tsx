@@ -1,5 +1,7 @@
 
 import ReactMarkdown from 'react-markdown';
+import { InlineMath, BlockMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from "@/components/ui/button";
@@ -59,6 +61,28 @@ export default function MessageBubble({ message, tutorPersona, onExplainWithVide
             <div className="text-foreground prose prose-sm max-w-none dark:prose-invert">
               <ReactMarkdown
                 components={{
+                  // Handle LaTeX math expressions
+                  p({ children }) {
+                    const content = String(children);
+                    // Check for LaTeX expressions
+                    if (content.includes('$')) {
+                      const parts = content.split(/(\$[^$]*\$|\$\$[^$]*\$\$)/);
+                      return (
+                        <p>
+                          {parts.map((part, index) => {
+                            if (part.startsWith('$$') && part.endsWith('$$')) {
+                              return <BlockMath key={index} math={part.slice(2, -2)} />;
+                            } else if (part.startsWith('$') && part.endsWith('$')) {
+                              return <InlineMath key={index} math={part.slice(1, -1)} />;
+                            } else {
+                              return part;
+                            }
+                          })}
+                        </p>
+                      );
+                    }
+                    return <p>{children}</p>;
+                  },
                   code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || '');
                     return !inline && match ? (
@@ -76,7 +100,6 @@ export default function MessageBubble({ message, tutorPersona, onExplainWithVide
                       </code>
                     );
                   },
-                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
                   ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
                   ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
                   li: ({ children }) => <li className="mb-1">{children}</li>,
@@ -128,22 +151,67 @@ export default function MessageBubble({ message, tutorPersona, onExplainWithVide
 
             </div>
           )}
+          
+          {/* Action buttons for assistant messages */}
+          {!isUser && (
+            <div className="mt-3 pt-3 border-t border-border flex flex-wrap gap-2">
+              {onExplainWithVideo && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExplainWithVideo}
+                  className="text-xs hover:bg-primary hover:text-primary-foreground transition-colors"
+                >
+                  <Play className="w-3 h-3 mr-1" />
+                  Explain with Video
+                </Button>
+              )}
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const event = new CustomEvent('sendMessage', { 
+                    detail: `Explain like I'm 5: ${message.content.substring(0, 100)}...` 
+                  });
+                  window.dispatchEvent(event);
+                }}
+                className="text-xs hover:bg-green-500 hover:text-white transition-colors"
+              >
+                🧒 Explain like I'm 5
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const event = new CustomEvent('sendMessage', { 
+                    detail: `Give me an example of: ${message.content.substring(0, 100)}...` 
+                  });
+                  window.dispatchEvent(event);
+                }}
+                className="text-xs hover:bg-blue-500 hover:text-white transition-colors"
+              >
+                💡 Give example
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const event = new CustomEvent('sendMessage', { 
+                    detail: `Can you practice questions about: ${message.content.substring(0, 100)}...` 
+                  });
+                  window.dispatchEvent(event);
+                }}
+                className="text-xs hover:bg-purple-500 hover:text-white transition-colors"
+              >
+                📝 Practice questions
+              </Button>
+            </div>
+          )}
         </div>
-        
-        {/* Explain with Video Button - Only for assistant messages */}
-        {!isUser && (
-          <div className="mt-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExplainWithVideo}
-              className="text-xs"
-            >
-              <Play className="w-3 h-3 mr-2 text-red-500" />
-              Explain with Video
-            </Button>
-          </div>
-        )}
+
         
         {/* Message metadata */}
         <div className={`mt-2 ${isUser ? 'text-right' : ''}`}>
