@@ -32,25 +32,25 @@ export default function TutorCard({ persona }: TutorCardProps) {
     <div
       onClick={() => setSelectedTutor(persona)}
       className={cn(
-        "group cursor-pointer bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-200",
+        "group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-200",
         getHoverColor(persona.color)
       )}
     >
       <div className="flex items-center mb-4">
-        <div className={cn("w-12 h-12 bg-gradient-to-br rounded-xl flex items-center justify-center", persona.color)}>
-          <i className={cn(persona.icon, "text-white text-lg")}></i>
+        <div className={cn("w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br rounded-xl flex items-center justify-center flex-shrink-0", persona.color)}>
+          <i className={cn(persona.icon, "text-white text-base sm:text-lg")}></i>
         </div>
-        <div className="ml-4">
-          <h3 className={cn("font-semibold text-slate-900", getTextColor(persona.color))}>
+        <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+          <h3 className={cn("font-semibold text-slate-900 dark:text-white text-sm sm:text-base", getTextColor(persona.color))}>
             {persona.name}
           </h3>
-          <p className="text-sm text-slate-500">{persona.specialization}</p>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 truncate">{persona.specialization}</p>
         </div>
       </div>
-      <p className="text-sm text-slate-600 mb-4">{persona.description}</p>
-      <div className="flex items-center text-xs text-slate-500">
+      <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 mb-4 line-clamp-2">{persona.description}</p>
+      <div className="flex items-center text-xs text-slate-500 dark:text-gray-400">
         <i className={cn(
-          "mr-1",
+          "mr-1 flex-shrink-0",
           persona.popularity === 'Most Popular' ? "fas fa-users" :
           persona.popularity === 'Highly Rated' ? "fas fa-star" :
           persona.popularity === 'Quick Response' ? "fas fa-clock" :
@@ -58,7 +58,7 @@ export default function TutorCard({ persona }: TutorCardProps) {
           persona.popularity === 'Fast Growing' ? "fas fa-trending-up" :
           "fas fa-infinity"
         )}></i>
-        <span>{persona.popularity}</span>
+        <span className="truncate">{persona.popularity}</span>
       </div>
     </div>
   );

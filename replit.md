@@ -7,16 +7,20 @@ EduTutor is a session-based educational AI chat platform that provides personali
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Preferred UI framework: Bootstrap 5 for responsive design.
+Preferred theme: Dark mode by default.
+Preferred layout: Collapsible left sidebar for better mobile experience.
 
 ## System Architecture
 
 ### Frontend Architecture
 - **Framework**: React with TypeScript using Vite as the build tool
-- **UI Library**: Shadcn/ui components built on Radix UI primitives
-- **Styling**: Tailwind CSS with CSS variables for theming
+- **UI Library**: Shadcn/ui components built on Radix UI primitives + Bootstrap 5
+- **Styling**: Tailwind CSS with CSS variables for theming + Bootstrap responsive grid
 - **State Management**: Zustand for global application state
 - **Data Fetching**: TanStack Query (React Query) for server state management
 - **Routing**: Wouter for lightweight client-side routing
+- **Theme Management**: Custom ThemeContext with localStorage persistence
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js server
@@ -62,14 +66,15 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 ### AI Services
-- **Google Gemini API**: Text generation and chat responses
-- **YouTube Data API v3**: Educational video search and metadata
+- **Google Gemini API**: Text generation and chat responses (GEMINI_API_KEY)
+- **YouTube Data API v3**: Educational video search and metadata (YOUTUBE_API_KEY)
 
 ### UI/UX Libraries
+- **Bootstrap 5**: Responsive CSS framework and mobile-first design
 - **Radix UI**: Accessible component primitives
 - **Shadcn/ui**: Pre-built component library
-- **Tailwind CSS**: Utility-first styling
-- **Lucide React**: Icon library
+- **Tailwind CSS**: Utility-first styling with dark mode support
+- **Font Awesome**: Icon library for consistent iconography
 
 ### Development Tools
 - **Vite**: Build tool and dev server

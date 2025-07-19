@@ -38,6 +38,9 @@ export interface AppState {
   messages: Message[];
   isLoading: boolean;
   
+  // UI state
+  sidebarCollapsed: boolean;
+  
   // Actions
   setCurrentView: (view: AppState['currentView']) => void;
   setSelectedTutor: (tutor: TutorPersona) => void;
@@ -46,6 +49,8 @@ export interface AppState {
   addSessionItem: (item: Omit<SessionItem, 'id' | 'timestamp'>) => void;
   setLoading: (loading: boolean) => void;
   initializeSession: () => void;
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
 // Generate a simple session ID
@@ -60,6 +65,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   selectedTutor: null,
   messages: [],
   isLoading: false,
+  sidebarCollapsed: true, // Start collapsed on mobile by default
 
   setCurrentView: (view) => set({ currentView: view }),
   
@@ -111,7 +117,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (!state.sessionId) {
       set({ sessionId: generateSessionId() });
     }
-  }
+  },
+  
+  toggleSidebar: () => set(state => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+  
+  setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed })
 }));
 
 export const tutorPersonas: TutorPersona[] = [
