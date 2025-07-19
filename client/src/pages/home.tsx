@@ -4,7 +4,7 @@ import AppSidebar from "@/components/layout/app-sidebar";
 import Header from "@/components/layout/header";
 import WelcomeScreen from "@/components/welcome/welcome-screen";
 import ChatInterface from "@/components/chat/chat-interface";
-import PaperGenerator from "@/pages/paper-generator";
+import PaperGenerator from "@/components/paper-generator/paper-generator";
 import SkillsPage from "@/pages/skills";
 
 export default function Home() {
