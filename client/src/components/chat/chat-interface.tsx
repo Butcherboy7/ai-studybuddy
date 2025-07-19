@@ -555,23 +555,24 @@ export default function ChatInterface() {
   return (
     <div className="flex-1 flex flex-col bg-background">
       {/* Chat Header with Mode Switcher */}
-      <div className="bg-card border-b border-border px-6 py-4">
+      <div className="bg-card border-b border-border px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className={`w-10 h-10 bg-gradient-to-br ${selectedTutor.color} rounded-lg flex items-center justify-center mr-3`}>
-              <i className={`${selectedTutor.icon} text-white`}></i>
+            <div className={`w-8 h-8 bg-gradient-to-br ${selectedTutor.color} rounded-lg flex items-center justify-center mr-2`}>
+              <i className={`${selectedTutor.icon} text-white text-sm`}></i>
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">{selectedTutor.name}</h2>
+              <h2 className="text-base font-semibold text-foreground leading-tight">{selectedTutor.name}</h2>
+              <p className="text-xs text-muted-foreground leading-tight">{selectedTutor.specialization.split(' • ')[0]}</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             {/* Mode Switcher Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="text-sm">
-                  <i className="fas fa-exchange-alt mr-2"></i>
-                  Switch Mode
+                <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-7">
+                  <i className="fas fa-exchange-alt mr-1"></i>
+                  <span className="hidden sm:inline">Switch</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -597,17 +598,19 @@ export default function ChatInterface() {
               variant="ghost"
               size="sm"
               onClick={handleClearChat}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
+              title="Clear chat"
             >
-              <i className="fas fa-trash"></i>
+              <i className="fas fa-trash text-xs"></i>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleExportChat}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
+              title="Export chat"
             >
-              <i className="fas fa-download"></i>
+              <i className="fas fa-download text-xs"></i>
             </Button>
           </div>
         </div>
@@ -616,23 +619,23 @@ export default function ChatInterface() {
 
 
       {/* Chat Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background chat-messages-container relative">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-background chat-messages-container relative">
         {/* Always show quick start questions at the top */}
-        <div className="px-4 py-3 bg-muted/30 border border-border rounded-lg mb-4">
-          <p className="text-sm text-muted-foreground mb-3 font-medium">
-            {messages.length === 0 ? "Get started with these questions:" : "Or try these suggestions:"}
+        <div className="px-3 py-2 bg-muted/20 border border-border rounded-lg mb-3">
+          <p className="text-xs text-muted-foreground mb-2 font-medium">
+            {messages.length === 0 ? "Get started:" : "Quick actions:"}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1">
             {getPredefinedPrompts().map((prompt, index) => (
               <Button
                 key={index}
                 variant="outline"
                 size="sm"
                 onClick={() => sendMessage(prompt)}
-                className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
+                className="text-xs h-6 px-2 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
                 disabled={isLoading}
               >
-                {prompt}
+                {prompt.length > 25 ? prompt.substring(0, 25) + "..." : prompt}
               </Button>
             ))}
           </div>
@@ -700,18 +703,17 @@ export default function ChatInterface() {
 
       {/* Predefined Prompts - Show above text input after AI responses */}
       {messages.some(msg => msg.role === 'assistant') && !isLoading && (
-        <div className="px-4 py-2 bg-muted/30 border-t border-border">
-          <p className="text-xs text-muted-foreground mb-2">Quick actions:</p>
-          <div className="flex flex-wrap gap-2">
-            {getPredefinedPrompts().slice(0, 4).map((prompt, index) => (
+        <div className="px-3 py-1.5 bg-muted/20 border-t border-border">
+          <div className="flex flex-wrap gap-1">
+            {getPredefinedPrompts().slice(0, 3).map((prompt, index) => (
               <Button
                 key={index}
                 variant="outline"
                 size="sm"
                 onClick={() => sendMessage(prompt)}
-                className="text-xs h-6 px-2 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
+                className="text-xs h-5 px-2 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
               >
-                {prompt}
+                {prompt.length > 20 ? prompt.substring(0, 20) + "..." : prompt}
               </Button>
             ))}
           </div>
@@ -719,7 +721,7 @@ export default function ChatInterface() {
       )}
 
       {/* Chat Input */}
-      <div className="bg-card border-t border-border p-4">
+      <div className="bg-card border-t border-border p-3">
 
         {/* File processing indicator */}
         {isProcessingFile && (
@@ -733,7 +735,7 @@ export default function ChatInterface() {
           </div>
         )}
 
-        <div className="flex items-end space-x-3">
+        <div className="flex items-end space-x-2">
           {/* File Upload Button */}
           <Button
             type="button"
@@ -741,7 +743,7 @@ export default function ChatInterface() {
             size="sm"
             onClick={triggerFileUpload}
             disabled={isLoading || isProcessingFile}
-            className="text-muted-foreground hover:text-foreground px-3 py-3 min-h-[48px]"
+            className="text-muted-foreground hover:text-foreground p-2 min-h-[40px]"
             title="Upload image or PDF"
           >
             <i className="fas fa-paperclip"></i>
@@ -754,7 +756,7 @@ export default function ChatInterface() {
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={`Ask me anything about ${selectedTutor.specialization.split(' • ')[0].toLowerCase()}...`}
-              className="min-h-[48px] max-h-32 resize-none bg-background border-border text-foreground placeholder:text-muted-foreground pr-12"
+              className="min-h-[40px] max-h-32 resize-none bg-background border-border text-foreground placeholder:text-muted-foreground pr-10"
               rows={1}
               disabled={isLoading || isProcessingFile}
             />
@@ -764,24 +766,24 @@ export default function ChatInterface() {
               type="button"
               variant="ghost"
               size="sm"
-              className={`absolute right-2 top-1/2 transform -translate-y-1/2 ${
+              className={`absolute right-1 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 ${
                 isListening ? 'text-red-500 animate-pulse' : 'text-muted-foreground hover:text-foreground'
               }`}
               onClick={isListening ? stopListening : startListening}
               disabled={isLoading || isProcessingFile}
               title="Voice input"
             >
-              <i className={`fas ${isListening ? 'fa-stop' : 'fa-microphone'}`}></i>
+              <i className={`fas ${isListening ? 'fa-stop' : 'fa-microphone'} text-sm`}></i>
             </Button>
           </div>
 
           <Button
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isLoading || isProcessingFile}
-            className="px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center font-medium min-h-[48px]"
+            className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center font-medium min-h-[40px]"
           >
-            <i className="fas fa-paper-plane mr-2"></i>
-            Send
+            <i className="fas fa-paper-plane mr-1"></i>
+            <span className="hidden sm:inline">Send</span>
           </Button>
         </div>
 
