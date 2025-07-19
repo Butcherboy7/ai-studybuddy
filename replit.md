@@ -113,6 +113,8 @@ Project setup: GitHub-friendly with proper documentation and easy deployment.
 - **Contextual Quick Actions**: Replaced static quick actions with dynamic buttons like "Explain like I'm 5", "Give me examples", "Make it simpler" that appear above chat input after AI responses
 - **Smart UI Flow**: Quick start options now disappear after tutor selection and first message to reduce clutter
 - **Enhanced Chat UX**: Improved space efficiency throughout the interface for better mobile and desktop experience
+- **Unified Welcome Experience**: Integrated chat header approach into welcome screen - when tutor is selected, header transforms to show tutor info and contextual starter questions
+- **PDF/OCR Practice Papers**: Added file upload functionality to practice paper generator with PDF and image OCR support for creating questions from study materials
 
 ## Recent Changes (January 2025)
 
