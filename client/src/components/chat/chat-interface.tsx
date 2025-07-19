@@ -151,7 +151,7 @@ export default function ChatInterface() {
       // Only add messages that aren't already in the store
       existingMessages.forEach((msg: any) => {
         if (!messages.find(m => m.id === msg.id)) {
-          addMessage({
+          useAppStore.getState().addMessage({
             role: msg.role,
             content: msg.content,
             videoUrl: msg.videoUrl
@@ -159,7 +159,7 @@ export default function ChatInterface() {
         }
       });
     }
-  }, [existingMessages, messages, addMessage]);
+  }, [existingMessages]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
