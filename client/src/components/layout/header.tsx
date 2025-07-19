@@ -21,9 +21,9 @@ export default function Header() {
       <div className="flex items-center space-x-4">
         {/* Session indicator */}
         {sessionItems.length > 0 && (
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20">
+          <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-primary/10">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+            <span className="text-sm font-medium text-primary">
               {sessionItems.length} activities
             </span>
           </div>
@@ -32,8 +32,8 @@ export default function Header() {
         {/* Settings dropdown */}
         <Dropdown
           trigger={
-            <button className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-              <i className="fas fa-cog text-lg icon icon-hover"></i>
+            <button className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-muted transition-all text-muted-foreground hover:text-foreground">
+              <i className="fas fa-cog text-lg"></i>
             </button>
           }
         >
@@ -65,7 +65,7 @@ export default function Header() {
           <DropdownItem
             icon="fas fa-refresh"
             onClick={clearSession}
-            className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+            className="text-destructive hover:bg-destructive/10"
           >
             Clear Session
           </DropdownItem>

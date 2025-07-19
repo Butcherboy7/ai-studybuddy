@@ -13,10 +13,10 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route>
-        <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen w-full flex items-center justify-center bg-background">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">404 - Page Not Found</h1>
-            <p className="text-gray-600">The page you're looking for doesn't exist.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-4">404 - Page Not Found</h1>
+            <p className="text-muted-foreground">The page you're looking for doesn't exist.</p>
           </div>
         </div>
       </Route>

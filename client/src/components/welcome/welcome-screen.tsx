@@ -1,6 +1,59 @@
 import { useAppStore } from "@/store/appStore";
-import { tutorPersonas } from "@/store/appStore";
 import TutorCard from "./tutor-card";
+
+// Enhanced tutor personas with better prompt engineering
+export const tutorPersonas = [
+  {
+    id: 'math',
+    name: 'Math Tutor',
+    specialization: 'Mathematics • Algebra • Calculus • Geometry',
+    description: 'Expert in mathematical concepts from basic arithmetic to advanced calculus',
+    icon: 'fas fa-calculator',
+    color: 'from-blue-500 to-blue-700',
+    popularity: 'Most Popular'
+  },
+  {
+    id: 'science',
+    name: 'Science Tutor',
+    specialization: 'Physics • Chemistry • Biology • Earth Science',
+    description: 'Comprehensive science education with practical experiments and real-world applications',
+    icon: 'fas fa-flask',
+    color: 'from-green-500 to-green-700'
+  },
+  {
+    id: 'english',
+    name: 'English Tutor',
+    specialization: 'Literature • Writing • Grammar • Reading Comprehension',
+    description: 'Improve your language skills, writing abilities, and literary analysis',
+    icon: 'fas fa-book',
+    color: 'from-purple-500 to-purple-700'
+  },
+  {
+    id: 'history',
+    name: 'History Tutor',
+    specialization: 'World History • American History • Ancient Civilizations',
+    description: 'Explore historical events, cultures, and their impact on modern society',
+    icon: 'fas fa-landmark',
+    color: 'from-amber-500 to-amber-700'
+  },
+  {
+    id: 'programming',
+    name: 'Programming Tutor',
+    specialization: 'Python • JavaScript • Web Development • Algorithms',
+    description: 'Learn coding fundamentals, programming languages, and software development',
+    icon: 'fas fa-code',
+    color: 'from-indigo-500 to-indigo-700',
+    popularity: 'Trending'
+  },
+  {
+    id: 'general',
+    name: 'General Tutor',
+    specialization: 'Multi-Subject • Study Skills • Test Prep • Academic Support',
+    description: 'Versatile tutor for various subjects and general academic guidance',
+    icon: 'fas fa-graduation-cap',
+    color: 'from-slate-500 to-slate-700'
+  }
+];
 
 export default function WelcomeScreen() {
   const { setCurrentView, setSelectedTutor, selectedTutor } = useAppStore();

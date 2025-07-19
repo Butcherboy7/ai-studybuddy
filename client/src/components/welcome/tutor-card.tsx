@@ -55,21 +55,23 @@ export default function TutorCard({ persona }: TutorCardProps) {
       </p>
       
       <div className="flex items-center justify-between">
-        <div className="flex items-center text-xs font-medium px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20">
-          <i className={cn(
-            "mr-2 text-blue-600",
-            persona.popularity === 'Most Popular' ? "fas fa-users" :
-            persona.popularity === 'Highly Rated' ? "fas fa-star" :
-            persona.popularity === 'Quick Response' ? "fas fa-clock" :
-            persona.popularity === 'Expert Level' ? "fas fa-graduation-cap" :
-            persona.popularity === 'Fast Growing' ? "fas fa-trending-up" :
-            "fas fa-infinity"
-          )}></i>
-          <span className="text-blue-700 dark:text-blue-300">{persona.popularity}</span>
-        </div>
+        {persona.popularity && (
+          <div className="flex items-center text-xs font-medium px-3 py-1 rounded-full bg-primary/10">
+            <i className={cn(
+              "mr-2 text-primary",
+              persona.popularity === 'Most Popular' ? "fas fa-users" :
+              persona.popularity === 'Highly Rated' ? "fas fa-star" :
+              persona.popularity === 'Quick Response' ? "fas fa-clock" :
+              persona.popularity === 'Expert Level' ? "fas fa-graduation-cap" :
+              persona.popularity === 'Trending' ? "fas fa-trending-up" :
+              "fas fa-infinity"
+            )}></i>
+            <span className="text-primary">{persona.popularity}</span>
+          </div>
+        )}
         
-        <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <i className="fas fa-arrow-right text-blue-600 text-sm"></i>
+        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <i className="fas fa-arrow-right text-primary text-sm"></i>
         </div>
       </div>
     </div>

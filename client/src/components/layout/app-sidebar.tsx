@@ -67,7 +67,7 @@ export default function AppSidebar() {
         {!sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all icon icon-hover"
+            className="p-2 rounded-lg hover:bg-muted transition-all text-muted-foreground hover:text-foreground"
             title="Collapse sidebar"
           >
             <i className="fas fa-chevron-left text-sm"></i>
@@ -99,12 +99,9 @@ export default function AppSidebar() {
               "w-full flex items-center py-3 text-sm font-medium rounded-xl transition-all group relative",
               sidebarCollapsed ? "px-2 justify-center" : "px-4",
               currentView === item.view
-                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 shadow-sm"
-                : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                ? "bg-primary/10 text-primary shadow-sm"
+                : "hover:bg-muted text-muted-foreground hover:text-foreground"
             )}
-            style={{
-              color: currentView === item.view ? 'var(--primary)' : 'var(--text-secondary)'
-            }}
             title={sidebarCollapsed ? item.label : undefined}
           >
             <i className={cn(

@@ -94,12 +94,9 @@ export default function Home() {
               className={cn(
                 "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all",
                 currentView === item.view
-                  ? "bg-blue-50 dark:bg-blue-900/20 shadow-sm"
-                  : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  ? "bg-primary/10 dark:bg-primary/10 shadow-sm text-primary"
+                  : "hover:bg-muted dark:hover:bg-muted text-muted-foreground hover:text-foreground"
               )}
-              style={{
-                color: currentView === item.view ? 'var(--primary)' : 'var(--text-secondary)'
-              }}
             >
               <i className={cn(item.icon, "mr-3 text-lg")}></i>
               {item.label}

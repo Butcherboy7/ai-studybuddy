@@ -1,82 +1,56 @@
-import { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react"
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+import { cn } from "@/lib/utils"
+
+const DropdownMenu = DropdownMenuPrimitive.Root
+const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+const DropdownMenuContent = DropdownMenuPrimitive.Content
+const DropdownMenuItem = DropdownMenuPrimitive.Item
+const DropdownMenuSeparator = DropdownMenuPrimitive.Separator
 
 interface DropdownProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
-  align?: 'left' | 'right';
-  className?: string;
 }
 
-export function Dropdown({ trigger, children, align = 'right', className }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
+export function Dropdown({ trigger, children }: DropdownProps) {
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div onClick={() => setIsOpen(!isOpen)}>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         {trigger}
-      </div>
-      
-      {isOpen && (
-        <div
-          className={cn(
-            "absolute top-full mt-2 min-w-48 rounded-xl border shadow-lg z-50 py-2",
-            align === 'right' ? 'right-0' : 'left-0',
-            className
-          )}
-          style={{
-            backgroundColor: 'var(--card)',
-            borderColor: 'var(--border)',
-            boxShadow: 'var(--shadow-lg)'
-          }}
-        >
-          {children}
-        </div>
-      )}
-    </div>
-  );
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        className="min-w-56 bg-card border border-border rounded-md p-1 shadow-md"
+        sideOffset={4}
+      >
+        {children}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 interface DropdownItemProps {
-  children: React.ReactNode;
-  onClick?: () => void;
   icon?: string;
+  onClick?: () => void;
+  children: React.ReactNode;
   className?: string;
 }
 
-export function DropdownItem({ children, onClick, icon, className }: DropdownItemProps) {
+export function DropdownItem({ icon, onClick, children, className }: DropdownItemProps) {
   return (
-    <button
-      onClick={onClick}
+    <DropdownMenuItem
       className={cn(
-        "w-full flex items-center px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50",
+        "flex items-center px-3 py-2 text-sm rounded-sm cursor-pointer hover:bg-muted text-foreground",
         className
       )}
-      style={{ color: 'var(--text-secondary)' }}
+      onClick={onClick}
     >
-      {icon && <i className={cn(icon, "mr-3 icon")}></i>}
+      {icon && <i className={cn(icon, "mr-3 text-sm")}></i>}
       {children}
-    </button>
-  );
+    </DropdownMenuItem>
+  )
 }
 
 export function DropdownSeparator() {
-  return (
-    <div 
-      className="my-1 h-px" 
-      style={{ backgroundColor: 'var(--border)' }}
-    />
-  );
+  return <DropdownMenuSeparator className="h-px bg-border my-1" />
 }
