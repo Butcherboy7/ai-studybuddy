@@ -16,11 +16,15 @@ export default function Home() {
   // Sync route with app state
   useEffect(() => {
     if (location === '/') {
-      setCurrentView('welcome');
+      // Only set to welcome if currentView is career-advisor (coming from another route)
+      // Otherwise preserve the current view for internal navigation
+      if (currentView === 'career-advisor') {
+        setCurrentView('welcome');
+      }
     } else if (location.startsWith('/career-advisor')) {
       setCurrentView('career-advisor');
     }
-  }, [location, setCurrentView]);
+  }, [location, setCurrentView, currentView]);
 
   const renderMainContent = () => {
     switch (currentView) {

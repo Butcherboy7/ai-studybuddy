@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export default function AppSidebar() {
   const { currentView, setCurrentView, clearSession, sessionItems, sidebarCollapsed, toggleSidebar } = useAppStore();
   const { isDark, toggleTheme } = useTheme();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
   const navItems = [
     {
@@ -98,19 +98,20 @@ export default function AppSidebar() {
           <button
             key={item.id}
             onClick={() => {
-              // Debounce navigation to prevent double-clicks and freezing
+              // Prevent double-clicks
               if (currentView === item.view) {
-                return; // Already on this view
+                return;
               }
               
-              // Update view state first
+              // Always update the view state first
               setCurrentView(item.view);
               
-              // Handle routing for specific pages
+              // Handle routing based on the target view
               if (item.view === 'career-advisor') {
+                // Career advisor has its own route
                 setLocation('/career-advisor');
               } else {
-                // For all other views, navigate to home (which handles view switching internally)
+                // All other views are handled by the home route
                 setLocation('/');
               }
             }}
