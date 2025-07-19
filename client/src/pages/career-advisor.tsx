@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, FileText, Target, BookOpen, ExternalLink, Clock, User, Star } from 'lucide-react';
+import { Upload, FileText, Target, BookOpen, ExternalLink, Clock, User, Star, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { SkillGapAnalysis } from '@shared/schema';
@@ -380,12 +380,181 @@ export default function CareerAdvisor() {
             </Card>
           </div>
 
+          {/* Skills Development Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Skills Development Plan
+              </CardTitle>
+              <CardDescription>
+                Focus areas and learning resources to bridge your skill gaps
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* High Priority Skills */}
+                {analysisResult.analysis.recommendations.filter(rec => rec.priority === 'High').length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-4 flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5" />
+                      High Priority Skills (Start Here!)
+                    </h4>
+                    <div className="grid gap-4">
+                      {analysisResult.analysis.recommendations
+                        .filter(rec => rec.priority === 'High')
+                        .map((rec, index) => (
+                          <div key={index} className="border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4 rounded-r-lg">
+                            <h5 className="font-semibold text-lg mb-2">{rec.skill}</h5>
+                            <p className="text-gray-700 dark:text-gray-300 mb-4">{rec.description}</p>
+                            
+                            {rec.courses && rec.courses.length > 0 && (
+                              <div className="mt-4">
+                                <h6 className="font-medium mb-3 flex items-center gap-2">
+                                  <BookOpen className="h-4 w-4" />
+                                  Recommended YouTube Courses
+                                </h6>
+                                <div className="grid gap-3">
+                                  {rec.courses.map((course, courseIndex) => (
+                                    <div key={courseIndex} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                                      <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0">
+                                          <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                                            <i className="fab fa-youtube text-red-600 text-xl"></i>
+                                          </div>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <a 
+                                            href={course.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:text-blue-800 font-medium block mb-1 hover:underline"
+                                          >
+                                            {course.title}
+                                          </a>
+                                          <div className="flex items-center gap-4 text-sm text-gray-500 mb-2">
+                                            <span className="flex items-center gap-1">
+                                              <User className="h-3 w-3" />
+                                              {course.channel}
+                                            </span>
+                                            {course.duration && (
+                                              <span className="flex items-center gap-1">
+                                                <Clock className="h-3 w-3" />
+                                                {course.duration}
+                                              </span>
+                                            )}
+                                          </div>
+                                          {course.description && (
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                              {course.description}
+                                            </p>
+                                          )}
+                                        </div>
+                                        <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Medium Priority Skills */}
+                {analysisResult.analysis.recommendations.filter(rec => rec.priority === 'Medium').length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-yellow-700 dark:text-yellow-400 mb-4 flex items-center gap-2">
+                      <Clock className="h-5 w-5" />
+                      Medium Priority Skills (Next Phase)
+                    </h4>
+                    <div className="grid gap-4">
+                      {analysisResult.analysis.recommendations
+                        .filter(rec => rec.priority === 'Medium')
+                        .map((rec, index) => (
+                          <div key={index} className="border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-r-lg">
+                            <h5 className="font-semibold mb-2">{rec.skill}</h5>
+                            <p className="text-gray-700 dark:text-gray-300 mb-3">{rec.description}</p>
+                            
+                            {rec.courses && rec.courses.length > 0 && (
+                              <div className="mt-3">
+                                <h6 className="font-medium mb-2 text-sm">Recommended Courses:</h6>
+                                <div className="space-y-2">
+                                  {rec.courses.slice(0, 2).map((course, courseIndex) => (
+                                    <a 
+                                      key={courseIndex}
+                                      href={course.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="block bg-white dark:bg-gray-800 rounded p-3 border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-shadow"
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <i className="fab fa-youtube text-red-600"></i>
+                                        <span className="text-blue-600 hover:text-blue-800 font-medium text-sm">{course.title}</span>
+                                        <ExternalLink className="h-3 w-3 text-gray-400 ml-auto" />
+                                      </div>
+                                      <div className="text-xs text-gray-500 mt-1">
+                                        {course.channel} {course.duration && `• ${course.duration}`}
+                                      </div>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Low Priority Skills */}
+                {analysisResult.analysis.recommendations.filter(rec => rec.priority === 'Low').length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-green-700 dark:text-green-400 mb-4 flex items-center gap-2">
+                      <CheckCircle className="h-5 w-5" />
+                      Low Priority Skills (Future Enhancement)
+                    </h4>
+                    <div className="grid gap-3">
+                      {analysisResult.analysis.recommendations
+                        .filter(rec => rec.priority === 'Low')
+                        .map((rec, index) => (
+                          <div key={index} className="border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-3 rounded-r-lg">
+                            <div className="flex items-center justify-between">
+                              <h5 className="font-medium">{rec.skill}</h5>
+                              {rec.courses && rec.courses.length > 0 && (
+                                <a 
+                                  href={rec.courses[0].url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                                >
+                                  <i className="fab fa-youtube"></i>
+                                  View Course
+                                  <ExternalLink className="h-3 w-3" />
+                                </a>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{rec.description}</p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Career Roadmap */}
           <Card>
             <CardHeader>
-              <CardTitle>Personalized Learning Roadmap</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                Your Personal Career Roadmap
+              </CardTitle>
               <CardDescription>
-                A comprehensive plan to achieve your career goals
+                A step-by-step guide to achieving your career goal: {careerGoal}
               </CardDescription>
             </CardHeader>
             <CardContent>
