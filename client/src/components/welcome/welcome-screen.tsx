@@ -56,7 +56,7 @@ export const tutorPersonas = [
 ];
 
 export default function WelcomeScreen() {
-  const { setCurrentView, setSelectedTutor, selectedTutor } = useAppStore();
+  const { setCurrentView, setSelectedTutor, selectedTutor, messages } = useAppStore();
 
   const handleStartGeneralChat = () => {
     // Set general tutor and switch to chat
@@ -116,39 +116,41 @@ export default function WelcomeScreen() {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="card-elevated p-6 sm:p-8 rounded-2xl">
-            <h3 className="text-xl font-bold mb-6 text-center"
-                style={{ color: 'var(--text-primary)' }}>
-              Quick Start Options
-            </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <button
-                onClick={handleStartGeneralChat}
-                className="btn-primary flex items-center p-6 rounded-2xl group hover:scale-105 transition-all duration-300"
-              >
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                  <i className="fas fa-rocket text-xl"></i>
-                </div>
-                <div className="text-left">
-                  <div className="font-semibold text-lg">Start Chat Now</div>
-                  <div className="opacity-90">Begin with our general AI tutor</div>
-                </div>
-              </button>
-              <button
-                onClick={handleGeneratePractice}
-                className="btn-secondary flex items-center p-6 rounded-2xl group hover:scale-105 transition-all duration-300"
-              >
-                <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                  <i className="fas fa-file-contract text-xl text-blue-600"></i>
-                </div>
-                <div className="text-left">
-                  <div className="font-semibold text-lg">Generate Practice</div>
-                  <div style={{ color: 'var(--text-muted)' }}>Create custom practice papers</div>
-                </div>
-              </button>
+          {/* Quick Actions - Only show when no tutor selected or no messages */}
+          {(!selectedTutor || messages.length === 0) && (
+            <div className="card-elevated p-6 sm:p-8 rounded-2xl">
+              <h3 className="text-xl font-bold mb-6 text-center"
+                  style={{ color: 'var(--text-primary)' }}>
+                Quick Start Options
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <button
+                  onClick={handleStartGeneralChat}
+                  className="btn-primary flex items-center p-6 rounded-2xl group hover:scale-105 transition-all duration-300"
+                >
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                    <i className="fas fa-rocket text-xl"></i>
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold text-lg">Start Chat Now</div>
+                    <div className="opacity-90">Begin with our general AI tutor</div>
+                  </div>
+                </button>
+                <button
+                  onClick={handleGeneratePractice}
+                  className="btn-secondary flex items-center p-6 rounded-2xl group hover:scale-105 transition-all duration-300"
+                >
+                  <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                    <i className="fas fa-file-contract text-xl text-blue-600"></i>
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold text-lg">Generate Practice</div>
+                    <div style={{ color: 'var(--text-muted)' }}>Create custom practice papers</div>
+                  </div>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
