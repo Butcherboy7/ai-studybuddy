@@ -620,40 +620,54 @@ export default function ChatInterface() {
 
       {/* Chat Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-background chat-messages-container relative">
-        {/* Always show quick start questions at the top */}
-        <div className="px-3 py-2 bg-muted/20 border border-border rounded-lg mb-3">
-          <p className="text-xs text-muted-foreground mb-2 font-medium">
-            {messages.length === 0 ? "Get started:" : "Quick actions:"}
-          </p>
-          <div className="flex flex-wrap gap-1">
-            {getPredefinedPrompts().map((prompt, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                onClick={() => sendMessage(prompt)}
-                className="text-xs h-6 px-2 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
-                disabled={isLoading}
-              >
-                {prompt.length > 25 ? prompt.substring(0, 25) + "..." : prompt}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        {/* Welcome message for empty chat */}
-        {messages.length === 0 && (
-          <div className="flex items-start space-x-3">
-            <div className={`w-8 h-8 bg-gradient-to-br ${selectedTutor.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-              <i className="fas fa-graduation-cap text-white text-xs"></i>
+        {/* Get started prompts - styled differently for empty vs active chat */}
+        {messages.length === 0 ? (
+          <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
+            <h4 className="text-sm font-semibold text-foreground mb-3">Get started with these questions:</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {getPredefinedPrompts().map((prompt, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => sendMessage(prompt)}
+                  className="text-xs h-8 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all text-left justify-start"
+                  disabled={isLoading}
+                >
+                  {prompt}
+                </Button>
+              ))}
             </div>
-            <div className="flex-1">
-              <div className="bg-card border border-border p-4 shadow-sm rounded-lg">
-                <p className="text-foreground">
-                  Hello! I'm your {selectedTutor.name}. I'm here to help you understand concepts step by step. 
-                  What would you like to work on today?
-                </p>
-              </div>
+          </div>
+        ) : (
+          <div className="px-3 py-2 bg-muted/20 border border-border rounded-lg mb-3">
+            <p className="text-xs text-muted-foreground mb-2 font-medium">Quick actions:</p>
+            <div className="flex flex-wrap gap-1">
+              {getPredefinedPrompts().map((prompt, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => sendMessage(prompt)}
+                  className="text-xs h-6 px-2 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
+                  disabled={isLoading}
+                >
+                  {prompt.length > 25 ? prompt.substring(0, 25) + "..." : prompt}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty state - just show get started prompts nicely */}
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-8 space-y-4">
+            <div className={`w-16 h-16 bg-gradient-to-br ${selectedTutor.color} rounded-2xl flex items-center justify-center shadow-lg`}>
+              <i className={`${selectedTutor.icon} text-white text-2xl`}></i>
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-foreground mb-1">{selectedTutor.name}</h3>
+              <p className="text-sm text-muted-foreground">{selectedTutor.specialization}</p>
             </div>
           </div>
         )}
