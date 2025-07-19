@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAppStore } from "@/store/appStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -235,14 +235,6 @@ export default function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Helper function to send a message directly
-  const sendMessage = async (message: string) => {
-    if (!message.trim() || isLoading) return;
-
-    setLoading(true);
-    sendMessageMutation.mutate(message.trim());
-  };
-
   const sendMessageMutation = useMutation({
     mutationFn: async (message: string) => {
       const messageHistory = messages.slice(-10).map(msg => ({
@@ -280,6 +272,14 @@ export default function ChatInterface() {
       });
     }
   });
+
+  // Helper function to send a message directly using useCallback to avoid dependency issues
+  const sendMessage = useCallback(async (message: string) => {
+    if (!message.trim() || isLoading) return;
+
+    setLoading(true);
+    sendMessageMutation.mutate(message.trim());
+  }, [isLoading, sendMessageMutation]);
 
   // Voice recognition functions
   const startListening = async () => {
