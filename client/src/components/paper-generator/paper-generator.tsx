@@ -179,15 +179,16 @@ export default function PaperGenerator() {
       return response.json();
     },
     onSuccess: (data) => {
+      console.log("File upload success:", data);
       setExtractedText(data.extractedText || '');
       setConfig(prev => ({ 
         ...prev, 
         uploadedContent: data.extractedText || '',
-        topic: prev.topic || 'Content from uploaded file'
+        topic: prev.topic || 'Questions from uploaded content'
       }));
       toast({
         title: "File Processed",
-        description: "Text extracted successfully from your file!",
+        description: `Text extracted successfully! ${data.extractedText?.length || 0} characters ready for question generation.`,
       });
     },
     onError: (error) => {
@@ -307,8 +308,16 @@ export default function PaperGenerator() {
       return;
     }
     
-    console.log("Generating paper with config:", config);
-    generatePaperMutation.mutate(config);
+    // Create the final config with extracted content
+    const finalConfig = {
+      ...config,
+      uploadedContent: extractedText || config.uploadedContent
+    };
+    
+    console.log("Generating paper with config:", finalConfig);
+    console.log("Extracted text being sent:", extractedText);
+    
+    generatePaperMutation.mutate(finalConfig);
   };
 
 
