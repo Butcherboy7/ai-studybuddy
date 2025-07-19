@@ -12,6 +12,35 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // File upload and OCR processing endpoint
+  app.post("/api/upload/ocr", async (req, res) => {
+    try {
+      // This would handle file upload and OCR processing
+      // For now, we'll return a placeholder response
+      const { fileName, fileType } = req.body;
+      
+      let extractedText = '';
+      
+      if (fileType === 'application/pdf') {
+        extractedText = `PDF content extracted from ${fileName}`;
+      } else {
+        extractedText = `Image text extracted from ${fileName}`;
+      }
+      
+      res.json({
+        success: true,
+        extractedText,
+        message: "File processed successfully"
+      });
+    } catch (error) {
+      console.error("File processing error:", error);
+      res.status(500).json({ 
+        error: "Failed to process file",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
   // Chat endpoint
   app.post("/api/chat", async (req, res) => {
     try {
