@@ -31,34 +31,46 @@ export default function TutorCard({ persona }: TutorCardProps) {
   return (
     <div
       onClick={() => setSelectedTutor(persona)}
-      className={cn(
-        "group cursor-pointer bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-200",
-        getHoverColor(persona.color)
-      )}
+      className="card-elevated cursor-pointer p-6 rounded-2xl group hover:scale-105 transition-all duration-300"
     >
-      <div className="flex items-center mb-4">
-        <div className={cn("w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br rounded-xl flex items-center justify-center flex-shrink-0", persona.color)}>
-          <i className={cn(persona.icon, "text-white text-base sm:text-lg")}></i>
+      <div className="flex items-start mb-4">
+        <div className={cn("w-14 h-14 bg-gradient-to-br rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform", persona.color)}>
+          <i className={cn(persona.icon, "text-white text-xl")}></i>
         </div>
-        <div className="ml-3 sm:ml-4 min-w-0 flex-1">
-          <h3 className={cn("font-semibold text-slate-900 dark:text-white text-sm sm:text-base", getTextColor(persona.color))}>
+        <div className="ml-4 min-w-0 flex-1">
+          <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors"
+              style={{ color: 'var(--text-primary)' }}>
             {persona.name}
           </h3>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 truncate">{persona.specialization}</p>
+          <p className="text-sm font-medium"
+             style={{ color: 'var(--text-muted)' }}>
+            {persona.specialization}
+          </p>
         </div>
       </div>
-      <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 mb-4 line-clamp-2">{persona.description}</p>
-      <div className="flex items-center text-xs text-slate-500 dark:text-gray-400">
-        <i className={cn(
-          "mr-1 flex-shrink-0",
-          persona.popularity === 'Most Popular' ? "fas fa-users" :
-          persona.popularity === 'Highly Rated' ? "fas fa-star" :
-          persona.popularity === 'Quick Response' ? "fas fa-clock" :
-          persona.popularity === 'Expert Level' ? "fas fa-graduation-cap" :
-          persona.popularity === 'Fast Growing' ? "fas fa-trending-up" :
-          "fas fa-infinity"
-        )}></i>
-        <span className="truncate">{persona.popularity}</span>
+      
+      <p className="text-sm leading-relaxed mb-4"
+         style={{ color: 'var(--text-secondary)' }}>
+        {persona.description}
+      </p>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center text-xs font-medium px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20">
+          <i className={cn(
+            "mr-2 text-blue-600",
+            persona.popularity === 'Most Popular' ? "fas fa-users" :
+            persona.popularity === 'Highly Rated' ? "fas fa-star" :
+            persona.popularity === 'Quick Response' ? "fas fa-clock" :
+            persona.popularity === 'Expert Level' ? "fas fa-graduation-cap" :
+            persona.popularity === 'Fast Growing' ? "fas fa-trending-up" :
+            "fas fa-infinity"
+          )}></i>
+          <span className="text-blue-700 dark:text-blue-300">{persona.popularity}</span>
+        </div>
+        
+        <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <i className="fas fa-arrow-right text-blue-600 text-sm"></i>
+        </div>
       </div>
     </div>
   );

@@ -25,81 +25,93 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-gray-900">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--main-bg)' }}>
       <AppSidebar />
       
       {/* Mobile menu button */}
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-50 md:hidden w-10 h-10 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg flex items-center justify-center text-slate-600 dark:text-gray-300 shadow-lg"
+        className="fixed top-4 left-4 z-50 md:hidden w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-all"
+        style={{ 
+          backgroundColor: 'var(--card)', 
+          borderColor: 'var(--border)',
+          color: 'var(--text-secondary)'
+        }}
       >
-        <i className="fas fa-bars"></i>
+        <i className="fas fa-bars text-lg"></i>
       </button>
       
       {/* Mobile sidebar overlay */}
       {!sidebarCollapsed && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-all"
           onClick={toggleSidebar}
         />
       )}
       
-      {/* Mobile sidebar - separate implementation */}
+      {/* Mobile sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-70 bg-white dark:bg-gray-900 border-r border-slate-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col",
+        "fixed inset-y-0 left-0 z-50 sidebar-width transform transition-all duration-300 ease-out md:hidden flex flex-col border-r",
         sidebarCollapsed ? "-translate-x-full" : "translate-x-0"
-      )}>
+      )}
+      style={{
+        backgroundColor: 'var(--sidebar-bg)',
+        borderColor: 'var(--sidebar-border)'
+      }}>
         {/* Mobile header */}
-        <div className="flex items-center h-16 px-6 border-b border-slate-200 dark:border-gray-700 justify-between">
+        <div className="flex items-center h-16 px-6 border-b justify-between"
+             style={{ borderColor: 'var(--sidebar-border)' }}>
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
               <i className="fas fa-graduation-cap text-white text-sm"></i>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">EduTutor</h1>
+            <h1 className="text-xl font-bold" style={{ color: 'var(--primary)' }}>EduTutor</h1>
           </div>
           <button
             onClick={toggleSidebar}
-            className="p-1 text-slate-400 hover:text-slate-600 dark:text-gray-400 dark:hover:text-gray-200 rounded"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <i className="fas fa-times"></i>
           </button>
         </div>
         
         {/* Mobile navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          <div className="space-y-1">
-            {[
-              { id: 'chat', label: 'Chat', icon: 'fas fa-comments', view: 'chat' as const },
-              { id: 'paper-generator', label: 'Practice Paper Generator', icon: 'fas fa-file-alt', view: 'paper-generator' as const },
-              { id: 'skills', label: 'Skills & Growth', icon: 'fas fa-chart-line', view: 'skills' as const }
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  useAppStore.getState().setCurrentView(item.view);
-                  toggleSidebar();
-                }}
-                className={cn(
-                  "w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                  currentView === item.view
-                    ? "text-primary bg-blue-50 dark:bg-blue-900/20"
-                    : "text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-gray-800"
-                )}
-              >
-                <i className={cn(item.icon, "mr-3", currentView === item.view ? "text-primary" : "")}></i>
-                {item.label}
-              </button>
-            ))}
-          </div>
+        <nav className="flex-1 px-4 py-6 space-y-1">
+          {[
+            { id: 'welcome', label: 'Welcome', icon: 'fas fa-home', view: 'welcome' as const },
+            { id: 'chat', label: 'Chat', icon: 'fas fa-comments', view: 'chat' as const },
+            { id: 'paper-generator', label: 'Practice Papers', icon: 'fas fa-file-alt', view: 'paper-generator' as const },
+            { id: 'skills', label: 'Skills & Growth', icon: 'fas fa-chart-line', view: 'skills' as const }
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                useAppStore.getState().setCurrentView(item.view);
+                toggleSidebar();
+              }}
+              className={cn(
+                "w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all",
+                currentView === item.view
+                  ? "bg-blue-50 dark:bg-blue-900/20 shadow-sm"
+                  : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+              )}
+              style={{
+                color: currentView === item.view ? 'var(--primary)' : 'var(--text-secondary)'
+              }}
+            >
+              <i className={cn(item.icon, "mr-3 text-lg")}></i>
+              {item.label}
+            </button>
+          ))}
         </nav>
       </div>
       
       {/* Main content */}
       <div className={cn(
-        "flex-1 flex flex-col overflow-hidden sidebar-transition",
-        "md:ml-70 md:dark:ml-70",
-        sidebarCollapsed ? "md:ml-16" : "md:ml-70",
-        "pt-16 md:pt-0" // Add top padding on mobile for the menu button
+        "flex-1 flex flex-col overflow-hidden transition-sidebar",
+        sidebarCollapsed ? "sidebar-margin-collapsed" : "sidebar-margin",
+        "pt-16 md:pt-0"
       )}>
         {renderMainContent()}
       </div>

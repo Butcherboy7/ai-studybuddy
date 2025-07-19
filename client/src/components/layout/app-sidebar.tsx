@@ -41,35 +41,48 @@ export default function AppSidebar() {
 
   return (
     <div className={cn(
-      "fixed inset-y-0 left-0 z-50 flex flex-col sidebar-transition theme-transition border-r d-none d-md-flex",
-      sidebarCollapsed ? "w-16" : "w-70",
-      "bg-white dark:bg-gray-900 border-slate-200 dark:border-gray-700"
-    )}>
+      "fixed inset-y-0 left-0 z-50 flex flex-col transition-sidebar border-r hidden md:flex",
+      sidebarCollapsed ? "sidebar-width-collapsed" : "sidebar-width"
+    )}
+    style={{
+      backgroundColor: 'var(--sidebar-bg)',
+      borderColor: 'var(--sidebar-border)',
+      boxShadow: 'var(--shadow)'
+    }}>
       {/* Logo and Brand */}
       <div className={cn(
-        "flex items-center h-16 border-b border-slate-200 dark:border-gray-700",
-        sidebarCollapsed ? "px-3 justify-center" : "px-6"
-      )}>
+        "flex items-center h-16 px-4 border-b",
+        sidebarCollapsed ? "justify-center" : "justify-between"
+      )}
+      style={{ borderColor: 'var(--sidebar-border)' }}>
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
             <i className="fas fa-graduation-cap text-white text-sm"></i>
           </div>
           {!sidebarCollapsed && (
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">EduTutor</h1>
+            <h1 className="text-xl font-bold text-primary">EduTutor</h1>
           )}
         </div>
+        
         {!sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="ml-auto p-1 text-slate-400 hover:text-slate-600 dark:text-gray-400 dark:hover:text-gray-200 rounded transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all icon icon-hover"
+            title="Collapse sidebar"
           >
-            <i className="fas fa-chevron-left"></i>
+            <i className="fas fa-chevron-left text-sm"></i>
           </button>
         )}
+        
         {sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="absolute top-4 -right-3 w-6 h-6 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-gray-400 dark:hover:text-gray-200 shadow-sm"
+            className="absolute top-4 -right-3 w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-all icon icon-hover"
+            style={{ 
+              backgroundColor: 'var(--sidebar-bg)', 
+              border: `1px solid var(--sidebar-border)` 
+            }}
+            title="Expand sidebar"
           >
             <i className="fas fa-chevron-right text-xs"></i>
           </button>
@@ -77,58 +90,75 @@ export default function AppSidebar() {
       </div>
 
       {/* Navigation Menu */}
-      <nav className={cn("flex-1 py-6 space-y-2", sidebarCollapsed ? "px-2" : "px-4")}>
-        <div className="space-y-1">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setCurrentView(item.view)}
-              className={cn(
-                "w-full flex items-center py-2 text-sm font-medium rounded-lg group transition-colors",
-                sidebarCollapsed ? "px-2 justify-center" : "px-3",
-                currentView === item.view
-                  ? "text-primary bg-blue-50 dark:bg-blue-900/20"
-                  : "text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-gray-800"
-              )}
-              title={sidebarCollapsed ? item.label : undefined}
-            >
-              <i className={cn(
-                item.icon, 
-                sidebarCollapsed ? "text-lg" : "mr-3", 
-                currentView === item.view ? "text-primary" : ""
-              )}></i>
-              {!sidebarCollapsed && item.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Current Session Section */}
+      <nav className={cn("flex-1 py-6 space-y-1", sidebarCollapsed ? "px-2" : "px-4")}>
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setCurrentView(item.view)}
+            className={cn(
+              "w-full flex items-center py-3 text-sm font-medium rounded-xl transition-all group relative",
+              sidebarCollapsed ? "px-2 justify-center" : "px-4",
+              currentView === item.view
+                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 shadow-sm"
+                : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+            )}
+            style={{
+              color: currentView === item.view ? 'var(--primary)' : 'var(--text-secondary)'
+            }}
+            title={sidebarCollapsed ? item.label : undefined}
+          >
+            <i className={cn(
+              item.icon, 
+              "text-lg transition-all",
+              sidebarCollapsed ? "" : "mr-3",
+              currentView === item.view ? "icon-primary" : "icon"
+            )}></i>
+            {!sidebarCollapsed && (
+              <span className="font-medium">{item.label}</span>
+            )}
+            {currentView === item.view && !sidebarCollapsed && (
+              <div className="absolute right-3 w-2 h-2 bg-blue-500 rounded-full"></div>
+            )}
+          </button>
+        ))}
+        
+        {/* Divider */}
         {!sidebarCollapsed && (
-          <div className="mt-8">
-            <h3 className="px-3 text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">
-              Current Session
+          <div className="my-6 border-t" style={{ borderColor: 'var(--sidebar-border)' }}></div>
+        )}
+
+        {/* Recent Activity */}
+        {!sidebarCollapsed && (
+          <div className="px-1">
+            <h3 className="px-3 text-xs font-semibold uppercase tracking-wider mb-3"
+                style={{ color: 'var(--text-muted)' }}>
+              Recent Activity
             </h3>
-            <div className="mt-3 space-y-1">
+            <div className="space-y-1">
               {sessionItems.length === 0 ? (
-                <div className="px-3 py-2 text-sm text-slate-400 dark:text-gray-500">
-                  No session activity yet
+                <div className="px-3 py-2 text-sm rounded-lg" style={{ color: 'var(--text-muted)' }}>
+                  No activity yet
                 </div>
               ) : (
-                sessionItems.slice(-5).map((item) => (
+                sessionItems.slice(-3).map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center px-3 py-2 text-sm text-slate-600 dark:text-gray-300 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-800 cursor-pointer"
+                    className="flex items-center px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-all"
                   >
                     <i className={cn(
-                      "mr-3 text-slate-400 dark:text-gray-500 text-xs",
-                      item.type === 'chat' ? "fas fa-message" : 
-                      item.type === 'paper' ? "fas fa-file-lines" : 
-                      "fas fa-chart-bar"
+                      "mr-3 text-xs icon",
+                      item.type === 'chat' ? "fas fa-comments" : 
+                      item.type === 'paper' ? "fas fa-file-alt" : 
+                      "fas fa-chart-line"
                     )}></i>
-                    <span className="truncate flex-1">{item.title}</span>
-                    <span className="ml-auto text-xs text-slate-400 dark:text-gray-500">
-                      {formatTimeAgo(item.timestamp)}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="truncate font-medium" style={{ color: 'var(--text-secondary)' }}>
+                        {item.title}
+                      </div>
+                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        {formatTimeAgo(item.timestamp)}
+                      </div>
+                    </div>
                   </div>
                 ))
               )}
@@ -137,33 +167,51 @@ export default function AppSidebar() {
         )}
       </nav>
 
-      {/* Session Controls */}
-      <div className={cn("border-t border-slate-200 dark:border-gray-700", sidebarCollapsed ? "p-2" : "p-4")}>
-        <div className={cn("space-y-2", sidebarCollapsed ? "flex flex-col items-center" : "")}>
+      {/* Footer Controls */}
+      <div className={cn("border-t p-4", sidebarCollapsed ? "px-2" : "px-4")}
+           style={{ borderColor: 'var(--sidebar-border)' }}>
+        <div className={cn("space-y-2")}>
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className={cn(
-              "flex items-center font-medium text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-gray-800 rounded-lg border border-slate-200 dark:border-gray-700 transition-colors",
-              sidebarCollapsed ? "w-10 h-10 justify-center" : "w-full px-3 py-2 text-sm justify-center"
+              "flex items-center font-medium rounded-xl transition-all",
+              sidebarCollapsed 
+                ? "w-12 h-12 justify-center" 
+                : "w-full px-4 py-3 justify-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800"
             )}
+            style={{ color: 'var(--text-secondary)' }}
             title={sidebarCollapsed ? (isDark ? "Switch to Light Mode" : "Switch to Dark Mode") : undefined}
           >
-            <i className={cn("fas", isDark ? "fa-sun" : "fa-moon", sidebarCollapsed ? "" : "mr-2")}></i>
-            {!sidebarCollapsed && (isDark ? "Light Mode" : "Dark Mode")}
+            <i className={cn(
+              "fas text-lg transition-all",
+              isDark ? "fa-sun text-amber-500" : "fa-moon text-blue-500",
+              sidebarCollapsed ? "" : "mr-3"
+            )}></i>
+            {!sidebarCollapsed && (
+              <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
+            )}
           </button>
           
           {/* Clear Session */}
           <button
             onClick={clearSession}
             className={cn(
-              "flex items-center font-medium text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-gray-800 rounded-lg border border-slate-200 dark:border-gray-700 transition-colors",
-              sidebarCollapsed ? "w-10 h-10 justify-center" : "w-full px-3 py-2 text-sm justify-center"
+              "flex items-center font-medium rounded-xl transition-all",
+              sidebarCollapsed 
+                ? "w-12 h-12 justify-center hover:bg-red-50 dark:hover:bg-red-900/20" 
+                : "w-full px-4 py-3 justify-center hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-800"
             )}
+            style={{ color: 'var(--text-secondary)' }}
             title={sidebarCollapsed ? "Clear Session" : undefined}
           >
-            <i className={cn("fas fa-refresh", sidebarCollapsed ? "" : "mr-2")}></i>
-            {!sidebarCollapsed && "Clear Session"}
+            <i className={cn(
+              "fas fa-refresh text-lg transition-all text-red-500",
+              sidebarCollapsed ? "" : "mr-3"
+            )}></i>
+            {!sidebarCollapsed && (
+              <span className="text-red-600 dark:text-red-400">Clear Session</span>
+            )}
           </button>
         </div>
       </div>

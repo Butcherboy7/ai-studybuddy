@@ -20,19 +20,43 @@ export default function WelcomeScreen() {
   return (
     <div className="flex-1 flex flex-col">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700 px-4 sm:px-8 py-6">
-        <div className="max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">Welcome to EduTutor</h1>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-gray-300">Choose your AI tutor and start learning with personalized guidance</p>
+      <div className="border-b px-4 sm:px-8 py-8"
+           style={{ 
+             backgroundColor: 'var(--header-bg)', 
+             borderColor: 'var(--border)' 
+           }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <i className="fas fa-graduation-cap text-white text-2xl"></i>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4"
+                style={{ color: 'var(--text-primary)' }}>
+              Welcome to EduTutor
+            </h1>
+            <p className="text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed"
+               style={{ color: 'var(--text-secondary)' }}>
+              Choose your AI tutor and start learning with personalized guidance across multiple subjects
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Tutor Persona Selection */}
       <div className="flex-1 px-4 sm:px-8 py-8 overflow-y-auto">
-        <div className="max-w-4xl">
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Select Your Tutor Persona</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-3"
+                  style={{ color: 'var(--text-primary)' }}>
+                Select Your AI Tutor
+              </h2>
+              <p className="text-lg"
+                 style={{ color: 'var(--text-secondary)' }}>
+                Each tutor is specialized for different subjects and learning styles
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {tutorPersonas.map((persona) => (
                 <TutorCard key={persona.id} persona={persona} />
               ))}
@@ -40,27 +64,34 @@ export default function WelcomeScreen() {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 p-4 sm:p-6">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="card-elevated p-6 sm:p-8 rounded-2xl">
+            <h3 className="text-xl font-bold mb-6 text-center"
+                style={{ color: 'var(--text-primary)' }}>
+              Quick Start Options
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <button
                 onClick={handleStartGeneralChat}
-                className="flex items-center p-4 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                className="btn-primary flex items-center p-6 rounded-2xl group hover:scale-105 transition-all duration-300"
               >
-                <i className="fas fa-rocket mr-3"></i>
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                  <i className="fas fa-rocket text-xl"></i>
+                </div>
                 <div className="text-left">
-                  <div className="font-medium">Start Chat Now</div>
-                  <div className="text-sm opacity-90">Begin with general tutor</div>
+                  <div className="font-semibold text-lg">Start Chat Now</div>
+                  <div className="opacity-90">Begin with our general AI tutor</div>
                 </div>
               </button>
               <button
                 onClick={handleGeneratePractice}
-                className="flex items-center p-4 border border-slate-200 dark:border-gray-700 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 transition-all duration-200"
+                className="btn-secondary flex items-center p-6 rounded-2xl group hover:scale-105 transition-all duration-300"
               >
-                <i className="fas fa-file-contract mr-3 text-slate-600 dark:text-gray-400"></i>
+                <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                  <i className="fas fa-file-contract text-xl text-blue-600"></i>
+                </div>
                 <div className="text-left">
-                  <div className="font-medium text-slate-900 dark:text-white">Generate Practice</div>
-                  <div className="text-sm text-slate-600 dark:text-gray-400">Create custom worksheets</div>
+                  <div className="font-semibold text-lg">Generate Practice</div>
+                  <div style={{ color: 'var(--text-muted)' }}>Create custom practice papers</div>
                 </div>
               </button>
             </div>
