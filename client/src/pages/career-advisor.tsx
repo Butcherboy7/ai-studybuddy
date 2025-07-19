@@ -64,7 +64,7 @@ export default function CareerAdvisor() {
   // Resume analysis mutation
   const analyzeMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('/api/analyze-resume', 'POST', {
+      return apiRequest('POST', '/api/analyze-resume', {
         resumeText: resumeText.trim(),
         careerGoal: careerGoal.trim(),
         targetRole: targetRole.trim() || undefined

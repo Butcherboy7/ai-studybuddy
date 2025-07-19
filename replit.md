@@ -155,11 +155,12 @@ Project setup: GitHub-friendly with proper documentation and easy deployment.
 - **No Answer Spaces**: PDFs now show only questions without answer spaces as requested
 - **Professional Typography**: Better fonts, spacing, and visual hierarchy in generated PDFs
 
-### Migration to Standard Replit Environment (Latest)
+### Migration to Standard Replit Environment (Latest - January 19, 2025)
 - **Platform Migration**: Successfully migrated from Replit Agent to standard Replit environment
 - **API Integration**: Configured GEMINI_API_KEY and YOUTUBE_API_KEY for full functionality
-- **UI Optimization**: Redesigned tutor cards for more compact, space-efficient layout
-- **Responsive Design**: Subject specializations now displayed as compact tags instead of long text
+- **UI Optimization**: Fixed duplicate tutor switcher buttons - now shows "Switch Tutor" (always visible) and "Study Mode" (only when chatting)
+- **PDF Enhancement**: Enhanced mathematical symbol handling in practice papers - properly converts LaTeX (α, β, π, √, etc.) to readable Unicode symbols
+- **Bug Fixes**: Fixed critical API request parameter order error in AI Career Advisor
 - **Performance**: Express server running cleanly on port 5000 with Vite HMR integration
 
 ### Compact UI Improvements
