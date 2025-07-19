@@ -659,7 +659,7 @@ export default function ChatInterface() {
                   key={index}
                   variant="outline"
                   size="sm"
-                  onClick={() => sendMessage(prompt)}
+                  onClick={() => setInputMessage(prompt)}
                   className="text-xs h-8 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all text-left justify-start"
                   disabled={isLoading}
                 >
