@@ -226,14 +226,15 @@ export default function PaperGenerator() {
       return response.json();
     },
     onSuccess: (data) => {
+      console.log("Generated paper data:", data);
       setGeneratedPaper(data);
       addSessionItem({
         title: `${config.subject}: ${config.topic}`,
         type: 'paper'
       });
       toast({
-        title: "Success",
-        description: "Practice paper generated successfully!",
+        title: "Success", 
+        description: `Practice paper with ${data.questions?.length || 0} questions generated successfully!`,
       });
     },
     onError: (error) => {
@@ -552,13 +553,6 @@ export default function PaperGenerator() {
               )}
             </div>
             <div className="flex space-x-3">
-
-              {generatedPaper && (
-                <Button variant="outline" onClick={downloadPaper}>
-                  <i className="fas fa-download mr-2"></i>
-                  Download PDF
-                </Button>
-              )}
               <Button 
                 onClick={handleGeneratePaper}
                 disabled={generatePaperMutation.isPending}
@@ -576,6 +570,12 @@ export default function PaperGenerator() {
                   </>
                 )}
               </Button>
+              {generatedPaper && (
+                <Button variant="outline" onClick={downloadPaper}>
+                  <i className="fas fa-download mr-2"></i>
+                  Download PDF
+                </Button>
+              )}
             </div>
           </div>
 
