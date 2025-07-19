@@ -33,6 +33,7 @@ export interface AppState {
   // Session management
   sessionId: string;
   sessionItems: SessionItem[];
+  hasSelectedTutor: boolean; // Track if user has ever selected a tutor in this session
   
   // Chat state
   selectedTutor: TutorPersona | null;
@@ -64,6 +65,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   currentView: 'welcome',
   sessionId: generateSessionId(),
   sessionItems: [],
+  hasSelectedTutor: false,
   selectedTutor: null,
   messages: [],
   isLoading: false,
@@ -78,7 +80,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   
   setSelectedTutor: (tutor) => {
-    set({ selectedTutor: tutor, currentView: 'chat' });
+    set({ selectedTutor: tutor, currentView: 'chat', hasSelectedTutor: true });
     // Add session item for tutor selection
     get().addSessionItem({
       title: `${tutor.name} Chat`,
@@ -114,6 +116,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   clearSession: () => set({
     sessionId: generateSessionId(),
     sessionItems: [],
+    hasSelectedTutor: false,
     selectedTutor: null,
     messages: [],
     currentView: 'welcome',

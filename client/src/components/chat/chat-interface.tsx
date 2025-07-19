@@ -776,6 +776,33 @@ User Question: ${message}`;
           {/* Show action buttons only when there are messages */}
           {messages.length > 0 && (
             <div className="flex items-center space-x-1">
+              {/* Tutor Switcher */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6">
+                    <i className="fas fa-user-graduate mr-1"></i>
+                    <span className="hidden sm:inline text-xs">Switch Tutor</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {tutorPersonas.map((tutor) => (
+                    <DropdownMenuItem
+                      key={tutor.id}
+                      onClick={() => setSelectedTutor(tutor)}
+                      className={selectedTutor.id === tutor.id ? 'bg-accent' : ''}
+                    >
+                      <div className={`w-6 h-6 rounded bg-gradient-to-r ${tutor.color} flex items-center justify-center mr-3`}>
+                        <i className={`${tutor.icon} text-white text-xs`}></i>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{tutor.name}</div>
+                        <div className="text-xs text-muted-foreground truncate">{tutor.specialization.split(' • ')[0]}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* Study Mode Switcher */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

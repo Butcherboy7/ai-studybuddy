@@ -10,21 +10,25 @@ import SkillsPage from "@/pages/skills";
 import { useEffect } from "react";
 
 export default function Home() {
-  const { currentView, setCurrentView, sidebarCollapsed, toggleSidebar } = useAppStore();
+  const { currentView, setCurrentView, sidebarCollapsed, toggleSidebar, hasSelectedTutor, selectedTutor } = useAppStore();
   const [location] = useLocation();
 
-  // Sync route with app state
+  // Sync route with app state and handle auto-navigation to chat
   useEffect(() => {
     if (location === '/') {
+      // If user has already selected a tutor and has one selected, go to chat
+      if (hasSelectedTutor && selectedTutor && currentView === 'welcome') {
+        setCurrentView('chat');
+      }
       // Only set to welcome if currentView is career-advisor (coming from another route)
       // Otherwise preserve the current view for internal navigation
-      if (currentView === 'career-advisor') {
-        setCurrentView('welcome');
+      else if (currentView === 'career-advisor') {
+        setCurrentView(hasSelectedTutor && selectedTutor ? 'chat' : 'welcome');
       }
     } else if (location.startsWith('/career-advisor')) {
       setCurrentView('career-advisor');
     }
-  }, [location, setCurrentView, currentView]);
+  }, [location, setCurrentView, currentView, hasSelectedTutor, selectedTutor]);
 
   const renderMainContent = () => {
     switch (currentView) {
