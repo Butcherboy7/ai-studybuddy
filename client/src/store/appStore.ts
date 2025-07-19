@@ -11,10 +11,11 @@ export interface TutorPersona {
 }
 
 export interface Message {
-  id: string;
+  id: number;
   role: 'user' | 'assistant';
   content: string;
-  videoUrl?: string;
+  videoUrl?: string | null;
+  reactions?: string[];
   timestamp: Date;
 }
 
@@ -46,6 +47,7 @@ export interface AppState {
   setSelectedTutor: (tutor: TutorPersona) => void;
   addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => void;
   clearSession: () => void;
+  clearMessages: () => void;
   addSessionItem: (item: Omit<SessionItem, 'id' | 'timestamp'>) => void;
   setLoading: (loading: boolean) => void;
   initializeSession: () => void;
@@ -81,7 +83,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   addMessage: (message) => {
     const newMessage: Message = {
       ...message,
-      id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      id: Date.now(), // Using timestamp as number ID
+      reactions: message.reactions || [],
       timestamp: new Date()
     };
     set(state => ({
@@ -110,6 +113,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     currentView: 'welcome',
     isLoading: false
   }),
+  
+  clearMessages: () => set({ messages: [] }),
   
   initializeSession: () => {
     // This can be called to ensure session is properly initialized

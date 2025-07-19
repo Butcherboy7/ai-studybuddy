@@ -3,12 +3,15 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from "@/components/ui/button";
+import { MessageReactions } from './message-reactions';
 
 interface Message {
-  id?: string;
+  id: number;
   role: 'user' | 'assistant';
   content: string;
-  videoUrl?: string;
+  videoUrl?: string | null;
+  reactions?: string[];
+  timestamp?: Date;
 }
 
 interface TutorPersona {
@@ -138,9 +141,14 @@ export default function MessageBubble({ message, tutorPersona, onYouTubeSearch }
           )}
         </div>
         
-        {/* Message metadata */}
-        <div className={`mt-1 text-xs text-muted-foreground ${isUser ? 'text-right' : ''}`}>
-          {isUser ? 'You' : tutorPersona.name}
+        {/* Message metadata and reactions */}
+        <div className={`mt-1 ${isUser ? 'text-right' : ''}`}>
+          <div className="text-xs text-muted-foreground mb-1">
+            {isUser ? 'You' : tutorPersona.name}
+          </div>
+          
+          {/* Reactions */}
+          <MessageReactions message={message} />
         </div>
       </div>
     </div>

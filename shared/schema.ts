@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -15,6 +16,7 @@ export const messages = pgTable("messages", {
   role: text("role").notNull(), // 'user' or 'assistant'
   content: text("content").notNull(),
   videoUrl: text("video_url"),
+  reactions: text("reactions").array().default(sql`'{}'::text[]`),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
@@ -40,6 +42,18 @@ export const insertMessageSchema = createInsertSchema(messages).pick({
   role: true,
   content: true,
   videoUrl: true,
+  reactions: true,
+});
+
+// Schema for adding reactions to messages
+export const addReactionSchema = z.object({
+  messageId: z.number(),
+  reaction: z.string().min(1).max(10),
+});
+
+export const removeReactionSchema = z.object({
+  messageId: z.number(),
+  reaction: z.string().min(1).max(10),
 });
 
 export const insertPracticepaperSchema = createInsertSchema(practicePapers).pick({
@@ -74,6 +88,9 @@ export const paperGenerationRequestSchema = z.object({
 // Types
 export type InsertChatSession = z.infer<typeof insertChatSessionSchema>;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type Message = typeof messages.$inferSelect;
+export type AddReaction = z.infer<typeof addReactionSchema>;
+export type RemoveReaction = z.infer<typeof removeReactionSchema>;
 export type InsertPracticePaper = z.infer<typeof insertPracticepaperSchema>;
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
 export type PaperGenerationRequest = z.infer<typeof paperGenerationRequestSchema>;

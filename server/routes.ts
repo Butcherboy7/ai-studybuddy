@@ -11,7 +11,9 @@ import {
   paperGenerationRequestSchema,
   insertChatSessionSchema,
   insertMessageSchema,
-  insertPracticepaperSchema
+  insertPracticepaperSchema,
+  addReactionSchema,
+  removeReactionSchema
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -265,6 +267,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Get practice papers error:", error);
       res.status(500).json({ error: "Failed to retrieve practice papers" });
+    }
+  });
+
+  // Add reaction to message
+  app.post("/api/messages/:messageId/reactions", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.messageId);
+      const { reaction } = addReactionSchema.parse({ messageId, ...req.body });
+      
+      const updatedMessage = await storage.addReactionToMessage(messageId, reaction);
+      res.json(updatedMessage);
+    } catch (error) {
+      console.error("Add reaction error:", error);
+      res.status(500).json({ error: "Failed to add reaction" });
+    }
+  });
+
+  // Remove reaction from message
+  app.delete("/api/messages/:messageId/reactions", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.messageId);
+      const { reaction } = removeReactionSchema.parse({ messageId, ...req.body });
+      
+      const updatedMessage = await storage.removeReactionFromMessage(messageId, reaction);
+      res.json(updatedMessage);
+    } catch (error) {
+      console.error("Remove reaction error:", error);
+      res.status(500).json({ error: "Failed to remove reaction" });
     }
   });
 

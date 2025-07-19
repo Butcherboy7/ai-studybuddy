@@ -183,15 +183,17 @@ export default function ChatInterface() {
   // Update local state when messages are loaded
   useEffect(() => {
     if (existingMessages && Array.isArray(existingMessages)) {
-      // Only add messages that aren't already in the store
+      // Clear and reload all messages to ensure reactions are synced
+      const { clearMessages, addMessage } = useAppStore.getState();
+      clearMessages();
+      
       existingMessages.forEach((msg: any) => {
-        if (!messages.find(m => m.id === msg.id)) {
-          useAppStore.getState().addMessage({
-            role: msg.role,
-            content: msg.content,
-            videoUrl: msg.videoUrl
-          });
-        }
+        addMessage({
+          role: msg.role,
+          content: msg.content,
+          videoUrl: msg.videoUrl,
+          reactions: msg.reactions || []
+        });
       });
     }
   }, [existingMessages]);

@@ -18,6 +18,8 @@ export interface IStorage {
   // Messages
   createMessage(message: InsertMessage): Promise<Message>;
   getMessagesBySession(sessionId: string, limit?: number): Promise<Message[]>;
+  addReactionToMessage(messageId: number, reaction: string): Promise<Message>;
+  removeReactionFromMessage(messageId: number, reaction: string): Promise<Message>;
   
   // Practice papers
   createPracticePaper(paper: InsertPracticePaper): Promise<PracticePaper>;
@@ -63,6 +65,7 @@ export class MemStorage implements IStorage {
       id,
       timestamp: new Date(),
       videoUrl: message.videoUrl || null,
+      reactions: message.reactions || [],
     };
     
     if (!this.messages.has(message.sessionId)) {
@@ -70,6 +73,45 @@ export class MemStorage implements IStorage {
     }
     this.messages.get(message.sessionId)!.push(newMessage);
     return newMessage;
+  }
+
+  async addReactionToMessage(messageId: number, reaction: string): Promise<Message> {
+    // Find the message across all sessions
+    for (const sessionMessages of this.messages.values()) {
+      const message = sessionMessages.find(msg => msg.id === messageId);
+      if (message) {
+        const reactions = message.reactions || [];
+        
+        // Add reaction if not already present
+        if (!reactions.includes(reaction)) {
+          reactions.push(reaction);
+          message.reactions = reactions;
+        }
+        
+        return message;
+      }
+    }
+    throw new Error(`Message with id ${messageId} not found`);
+  }
+
+  async removeReactionFromMessage(messageId: number, reaction: string): Promise<Message> {
+    // Find the message across all sessions
+    for (const sessionMessages of this.messages.values()) {
+      const message = sessionMessages.find(msg => msg.id === messageId);
+      if (message) {
+        const reactions = message.reactions || [];
+        
+        // Remove reaction if present
+        const reactionIndex = reactions.indexOf(reaction);
+        if (reactionIndex !== -1) {
+          reactions.splice(reactionIndex, 1);
+          message.reactions = reactions;
+        }
+        
+        return message;
+      }
+    }
+    throw new Error(`Message with id ${messageId} not found`);
   }
 
   async getMessagesBySession(sessionId: string, limit = 20): Promise<Message[]> {
