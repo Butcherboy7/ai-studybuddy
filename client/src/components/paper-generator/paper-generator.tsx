@@ -62,35 +62,41 @@ export default function PaperGenerator() {
         return cleaned.trim();
       };
 
-      // Enhanced helper function to add text with better formatting
+      // Enhanced helper function to add text with better formatting and strict margin control
       const addText = (text: string, fontSize = 10, isBold = false, isCenter = false, indent = 0) => {
         if (!text.trim()) {
           yPosition += lineHeight / 2;
           return;
         }
 
-        if (yPosition > pageHeight - margin - 10) {
+        // Check if we need a new page with more margin buffer
+        if (yPosition > pageHeight - margin - 15) {
           pdf.addPage();
-          yPosition = margin;
+          yPosition = margin + 5; // Start with small buffer on new page
         }
 
         pdf.setFontSize(fontSize);
         pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
         
         const cleanedText = cleanText(text);
-        const maxWidth = pageWidth - 2 * margin - indent;
+        // Ensure text stays within strict margins
+        const maxWidth = pageWidth - 2 * margin - indent - 5; // Extra buffer
         const lines = pdf.splitTextToSize(cleanedText, maxWidth);
         
-        lines.forEach((line: string) => {
-          if (yPosition > pageHeight - margin - 10) {
+        lines.forEach((line: string, lineIndex: number) => {
+          // Check page break for each line
+          if (yPosition > pageHeight - margin - 15) {
             pdf.addPage();
-            yPosition = margin;
+            yPosition = margin + 5;
           }
           
           const xPosition = isCenter ? pageWidth / 2 : margin + indent;
           const align = isCenter ? 'center' : 'left';
           
-          pdf.text(line, xPosition, yPosition, { align });
+          // Ensure xPosition stays within margins
+          const safeXPosition = Math.max(margin, Math.min(xPosition, pageWidth - margin));
+          
+          pdf.text(line, safeXPosition, yPosition, { align });
           yPosition += lineHeight;
         });
         
@@ -138,34 +144,47 @@ export default function PaperGenerator() {
       pdf.line(margin, yPosition, pageWidth - margin, yPosition);
       yPosition += 8;
       
-      // Questions with enhanced formatting
+      // Questions with enhanced formatting and strict margin control
       paperData.questions?.forEach((question: any, index: number) => {
-        // Question header
-        addText(`Question ${index + 1}`, 12, true);
-        yPosition += 1;
-        
-        // Question text with better spacing
-        addText(question.question, 11, false, false, 0);
-        yPosition += 3;
-
-        // Handle different question types
-        if (question.options && question.options.length > 0) {
-          // Multiple choice options
-          question.options.forEach((option: string, optIndex: number) => {
-            const letter = String.fromCharCode(65 + optIndex); // A, B, C, D
-            addText(`${letter}) ${cleanText(option)}`, 10, false, false, 5);
-          });
-          yPosition += 5;
-        } else {
-          // Open-ended question - no answer space as requested
-          yPosition += 3;
+        // Ensure question starts on a new line with proper spacing
+        if (yPosition > pageHeight - margin - 30) {
+          pdf.addPage();
+          yPosition = margin + 5;
         }
         
-        // Question separator
+        // Question header with proper alignment
+        addText(`Question ${index + 1}`, 12, true, false, 0);
+        yPosition += 2;
+        
+        // Question text with proper word wrapping and margin control
+        const questionText = cleanText(question.question);
+        addText(questionText, 11, false, false, 0);
+        yPosition += 4;
+
+        // Handle different question types with proper indentation
+        if (question.options && question.options.length > 0) {
+          // Multiple choice options with consistent spacing
+          question.options.forEach((option: string, optIndex: number) => {
+            const letter = String.fromCharCode(65 + optIndex); // A, B, C, D
+            const optionText = cleanText(option);
+            addText(`${letter}) ${optionText}`, 10, false, false, 8);
+            yPosition += 1; // Small space between options
+          });
+          yPosition += 4;
+        } else {
+          // Open-ended question - no answer space as requested
+          yPosition += 2;
+        }
+        
+        // Question separator with margin awareness
         if (index < paperData.questions.length - 1) {
+          // Ensure separator doesn't go beyond margins
           pdf.setLineWidth(0.1);
-          pdf.line(margin + 5, yPosition, pageWidth - margin - 5, yPosition);
-          yPosition += 6;
+          pdf.setDrawColor(200, 200, 200); // Light gray
+          const lineStart = margin + 10;
+          const lineEnd = pageWidth - margin - 10;
+          pdf.line(lineStart, yPosition, lineEnd, yPosition);
+          yPosition += 8;
         }
       });
 

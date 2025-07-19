@@ -147,12 +147,13 @@ Project setup: GitHub-friendly with proper documentation and easy deployment.
 - **UI Improvements**: Enhanced chat header with tutor switching dropdown and study mode controls
 
 ### Practice Paper Generator Enhancements (January 19, 2025)
-- **Fixed AI Generation**: Resolved Gemini API integration issues for practice question generation
-- **Smart PDF Processing**: Enhanced AI to generate questions from any PDF content using intelligent text extraction
-- **Improved File Upload**: Better UI for file uploads with drag-and-drop styling and progress indicators
-- **Content-Based Questions**: AI now creates contextual questions based on uploaded study materials
-- **Enhanced OCR Support**: Automatic text extraction from PDFs and images for question generation
-- **Professional Theming**: Updated UI to use proper theme variables for consistent dark/light mode support
+- **Simplified Interface**: Removed PDF upload feature to focus on topic-based question generation
+- **Enhanced PDF Formatting**: Professional PDF layout with borders, student info section, and instructions
+- **Improved Text Processing**: Added marked.js for better text cleanup and markdown processing
+- **Strict Margin Control**: Questions properly aligned within PDF margins with word wrapping
+- **JSON Error Handling**: Fixed Gemini API JSON parsing with control character cleanup and fallback parsing
+- **No Answer Spaces**: PDFs now show only questions without answer spaces as requested
+- **Professional Typography**: Better fonts, spacing, and visual hierarchy in generated PDFs
 
 ### Migration to Standard Replit Environment (Latest)
 - **Platform Migration**: Successfully migrated from Replit Agent to standard Replit environment

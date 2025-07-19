@@ -190,8 +190,31 @@ Return a JSON array with this EXACT format:
       responseText = jsonMatch[0];
     }
     
-    // Parse the JSON response
-    const result = JSON.parse(responseText);
+    // Clean up control characters and invalid JSON characters
+    responseText = responseText.replace(/[\u0000-\u001F\u007F-\u009F]/g, ''); // Remove control characters
+    responseText = responseText.replace(/\\/g, '\\\\'); // Escape backslashes
+    responseText = responseText.replace(/"/g, '"'); // Normalize quotes
+    responseText = responseText.replace(/'/g, "'"); // Normalize single quotes
+    
+    // Try to parse, with fallback handling
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("JSON parsing failed, trying to fix common issues:", parseError);
+      // Try fixing common JSON issues
+      let fixedText = responseText;
+      // Fix unescaped quotes in strings
+      fixedText = fixedText.replace(/(?<!\\)"/g, '\\"');
+      // Try again
+      try {
+        result = JSON.parse(fixedText);
+      } catch (secondParseError) {
+        console.error("Second JSON parse attempt failed:", secondParseError);
+        console.error("Response text:", responseText);
+        throw new Error("Failed to parse AI response as valid JSON");
+      }
+    }
     
     return result;
   } catch (error) {
