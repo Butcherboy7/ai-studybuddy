@@ -81,18 +81,7 @@ export default function AppSidebar() {
           </button>
         )}
         
-        {sidebarCollapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="absolute top-4 right-2 w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-800 dark:hover:to-purple-800 shadow-md hover:shadow-lg hover:scale-105 border border-slate-300 dark:border-slate-600"
-            style={{ 
-              color: 'var(--text-primary)'
-            }}
-            title="Expand sidebar"
-          >
-            <i className="fas fa-chevron-right text-sm transition-transform duration-300 hover:translate-x-0.5"></i>
-          </button>
-        )}
+
       </div>
 
       {/* Navigation Menu */}
