@@ -31,6 +31,7 @@ export default function ChatInterface() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [studyMode, setStudyMode] = useState<'guided' | 'quiz' | 'explain' | 'practice'>('guided');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -283,8 +284,20 @@ export default function ChatInterface() {
         content: msg.content
       }));
 
+      // Add study mode context to the message
+      const modeContext = {
+        guided: "Please provide step-by-step guidance with clear explanations and break down complex concepts into manageable parts.",
+        quiz: "Please ask interactive questions to test understanding and provide immediate feedback on answers.",
+        explain: "Please provide detailed conceptual explanations with examples and real-world applications.",
+        practice: "Please provide hands-on exercises, practice problems, and opportunities to apply the concepts."
+      };
+      
+      const contextualMessage = `[Study Mode: ${studyMode.toUpperCase()}] ${modeContext[studyMode]}
+
+User Question: ${message}`;
+
       const response = await apiRequest("POST", "/api/chat", {
-        message,
+        message: contextualMessage,
         sessionId,
         tutorPersona: selectedTutor?.name || "General Tutor",
         messageHistory
@@ -763,12 +776,68 @@ export default function ChatInterface() {
           {/* Show action buttons only when there are messages */}
           {messages.length > 0 && (
             <div className="flex items-center space-x-1">
-              {/* Mode Switcher Dropdown */}
+              {/* Study Mode Switcher */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-7">
-                    <i className="fas fa-exchange-alt mr-1"></i>
-                    <span className="hidden sm:inline">Switch</span>
+                  <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6">
+                    <i className={`fas ${
+                      studyMode === 'guided' ? 'fa-graduation-cap' :
+                      studyMode === 'quiz' ? 'fa-question-circle' :
+                      studyMode === 'explain' ? 'fa-lightbulb' : 'fa-dumbbell'
+                    } mr-1`}></i>
+                    <span className="hidden sm:inline text-xs capitalize">{studyMode}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem
+                    onClick={() => setStudyMode('guided')}
+                    className={studyMode === 'guided' ? 'bg-accent' : ''}
+                  >
+                    <i className="fas fa-graduation-cap mr-2"></i>
+                    <div>
+                      <div className="font-medium">Guided Learning</div>
+                      <div className="text-xs text-muted-foreground">Step-by-step explanations</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setStudyMode('quiz')}
+                    className={studyMode === 'quiz' ? 'bg-accent' : ''}
+                  >
+                    <i className="fas fa-question-circle mr-2"></i>
+                    <div>
+                      <div className="font-medium">Quiz Mode</div>
+                      <div className="text-xs text-muted-foreground">Interactive questions</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setStudyMode('explain')}
+                    className={studyMode === 'explain' ? 'bg-accent' : ''}
+                  >
+                    <i className="fas fa-lightbulb mr-2"></i>
+                    <div>
+                      <div className="font-medium">Explain Mode</div>
+                      <div className="text-xs text-muted-foreground">Detailed concepts</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setStudyMode('practice')}
+                    className={studyMode === 'practice' ? 'bg-accent' : ''}
+                  >
+                    <i className="fas fa-dumbbell mr-2"></i>
+                    <div>
+                      <div className="font-medium">Practice Mode</div>
+                      <div className="text-xs text-muted-foreground">Hands-on exercises</div>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Tutor Switcher Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6">
+                    <i className="fas fa-user-graduate mr-1"></i>
+                    <span className="hidden sm:inline text-xs">Tutor</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
