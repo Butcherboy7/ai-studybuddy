@@ -130,7 +130,7 @@ export default function CareerAdvisor() {
       {/* Main content */}
       <div className={cn(
         "flex-1 flex flex-col transition-all duration-300",
-        sidebarCollapsed ? "md:ml-sidebar-collapsed" : "md:ml-sidebar"
+        sidebarCollapsed ? "sidebar-margin-collapsed" : "sidebar-margin"
       )}>
         <Header />
         
