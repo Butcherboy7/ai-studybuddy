@@ -554,16 +554,16 @@ export default function ChatInterface() {
 
   return (
     <div className="flex-1 flex flex-col bg-background">
-      {/* Chat Header with Mode Switcher */}
-      <div className="bg-card border-b border-border px-4 py-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className={`w-8 h-8 bg-gradient-to-br ${selectedTutor.color} rounded-lg flex items-center justify-center mr-2`}>
-              <i className={`${selectedTutor.icon} text-white text-sm`}></i>
+      {/* Chat Header with Mode Switcher - Combined with empty state */}
+      <div className={`bg-card border-b border-border ${messages.length === 0 ? 'px-4 py-6' : 'px-4 py-2'}`}>
+        <div className={`flex ${messages.length === 0 ? 'flex-col items-center space-y-4' : 'items-center justify-between'}`}>
+          <div className={`flex items-center ${messages.length === 0 ? 'flex-col space-y-2' : ''}`}>
+            <div className={`bg-gradient-to-br ${selectedTutor.color} rounded-lg flex items-center justify-center ${messages.length === 0 ? 'w-16 h-16 shadow-lg rounded-2xl' : 'w-8 h-8 mr-2'}`}>
+              <i className={`${selectedTutor.icon} text-white ${messages.length === 0 ? 'text-2xl' : 'text-sm'}`}></i>
             </div>
-            <div>
-              <h2 className="text-base font-semibold text-foreground leading-tight">{selectedTutor.name}</h2>
-              <p className="text-xs text-muted-foreground leading-tight">{selectedTutor.specialization.split(' • ')[0]}</p>
+            <div className={messages.length === 0 ? 'text-center' : ''}>
+              <h2 className={`font-semibold text-foreground leading-tight ${messages.length === 0 ? 'text-lg mb-1' : 'text-base'}`}>{selectedTutor.name}</h2>
+              <p className={`text-muted-foreground leading-tight ${messages.length === 0 ? 'text-sm' : 'text-xs'}`}>{selectedTutor.specialization}</p>
             </div>
           </div>
           <div className="flex items-center space-x-1">
@@ -659,18 +659,7 @@ export default function ChatInterface() {
           </div>
         )}
 
-        {/* Empty state - just show get started prompts nicely */}
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-8 space-y-4">
-            <div className={`w-16 h-16 bg-gradient-to-br ${selectedTutor.color} rounded-2xl flex items-center justify-center shadow-lg`}>
-              <i className={`${selectedTutor.icon} text-white text-2xl`}></i>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-foreground mb-1">{selectedTutor.name}</h3>
-              <p className="text-sm text-muted-foreground">{selectedTutor.specialization}</p>
-            </div>
-          </div>
-        )}
+
         
         {messages.map((message) => (
           <MessageBubble 
