@@ -773,37 +773,37 @@ User Question: ${message}`;
             </div>
           </div>
           
-          {/* Show action buttons only when there are messages */}
-          {messages.length > 0 && (
-            <div className="flex items-center space-x-1">
-              {/* Tutor Switcher */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6">
-                    <i className="fas fa-user-graduate mr-1"></i>
-                    <span className="hidden sm:inline text-xs">Switch Tutor</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {tutorPersonas.map((tutor) => (
-                    <DropdownMenuItem
-                      key={tutor.id}
-                      onClick={() => setSelectedTutor(tutor)}
-                      className={selectedTutor.id === tutor.id ? 'bg-accent' : ''}
-                    >
-                      <div className={`w-6 h-6 rounded bg-gradient-to-r ${tutor.color} flex items-center justify-center mr-3`}>
-                        <i className={`${tutor.icon} text-white text-xs`}></i>
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{tutor.name}</div>
-                        <div className="text-xs text-muted-foreground truncate">{tutor.specialization.split(' • ')[0]}</div>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+          {/* Always show tutor switcher, regardless of messages */}
+          <div className="flex items-center space-x-1">
+            {/* Tutor Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6">
+                  <i className="fas fa-user-graduate mr-1"></i>
+                  <span className="hidden sm:inline text-xs">Switch Tutor</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {tutorPersonas.map((tutor) => (
+                  <DropdownMenuItem
+                    key={tutor.id}
+                    onClick={() => setSelectedTutor(tutor)}
+                    className={selectedTutor.id === tutor.id ? 'bg-accent' : ''}
+                  >
+                    <div className={`w-6 h-6 rounded bg-gradient-to-r ${tutor.color} flex items-center justify-center mr-3`}>
+                      <i className={`${tutor.icon} text-white text-xs`}></i>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{tutor.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">{tutor.specialization.split(' • ')[0]}</div>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-              {/* Study Mode Switcher */}
+            {/* Study Mode Switcher - Only show when there are messages */}
+            {messages.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6">
@@ -812,7 +812,7 @@ User Question: ${message}`;
                       studyMode === 'quiz' ? 'fa-question-circle' :
                       studyMode === 'explain' ? 'fa-lightbulb' : 'fa-dumbbell'
                     } mr-1`}></i>
-                    <span className="hidden sm:inline text-xs capitalize">{studyMode}</span>
+                    <span className="hidden sm:inline text-xs">Study Mode</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
@@ -858,54 +858,32 @@ User Question: ${message}`;
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Tutor Switcher Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-xs px-2 py-1 h-6">
-                    <i className="fas fa-user-graduate mr-1"></i>
-                    <span className="hidden sm:inline text-xs">Tutor</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {tutorPersonas.map((tutor) => (
-                    <DropdownMenuItem
-                      key={tutor.id}
-                      onClick={() => setSelectedTutor(tutor)}
-                      className="flex items-center"
-                    >
-                      <div className={`w-6 h-6 bg-gradient-to-br ${tutor.color} rounded flex items-center justify-center mr-3`}>
-                        <i className={`${tutor.icon} text-white text-xs`}></i>
-                      </div>
-                      <div>
-                        <div className="font-medium">{tutor.name}</div>
-                        <div className="text-xs text-muted-foreground">{tutor.specialization.split(' • ')[0]}</div>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClearChat}
-                className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
-                title="Clear chat"
-              >
-                <i className="fas fa-trash text-xs"></i>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleExportChat}
-                className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
-                title="Export chat"
-              >
-                <i className="fas fa-download text-xs"></i>
-              </Button>
-            </div>
-          )}
+            )}
+            
+            {/* Action buttons - Only show when there are messages */}
+            {messages.length > 0 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearChat}
+                  className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
+                  title="Clear chat"
+                >
+                  <i className="fas fa-trash text-xs"></i>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleExportChat}
+                  className="text-muted-foreground hover:text-foreground p-1 h-7 w-7"
+                  title="Export chat"
+                >
+                  <i className="fas fa-download text-xs"></i>
+                </Button>
+              </>
+            )}
+          </div>
         </div>
         
         {/* Get started prompts - integrated into header when no messages */}

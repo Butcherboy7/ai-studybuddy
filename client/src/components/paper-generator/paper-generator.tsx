@@ -51,15 +51,76 @@ export default function PaperGenerator() {
       const lineHeight = 6;
       let yPosition = margin;
 
-      // Helper function to clean and format text
+      // Helper function to clean and format text with proper mathematical symbol handling
       const cleanText = (text: string) => {
         // Remove markdown and HTML formatting
         let cleaned = text.replace(/\*\*(.*?)\*\*/g, '$1'); // Bold
         cleaned = cleaned.replace(/\*(.*?)\*/g, '$1'); // Italic
         cleaned = cleaned.replace(/`(.*?)`/g, '$1'); // Code
         cleaned = cleaned.replace(/<[^>]*>/g, ''); // HTML tags
-        cleaned = cleaned.replace(/&[a-zA-Z0-9#]+;/g, ' '); // HTML entities
+        
+        // Convert LaTeX mathematical expressions to readable text
+        cleaned = cleaned.replace(/\$\$(.*?)\$\$/g, (match, math) => {
+          return convertLatexToText(math);
+        });
+        cleaned = cleaned.replace(/\$(.*?)\$/g, (match, math) => {
+          return convertLatexToText(math);
+        });
+        
+        // Convert common mathematical symbols and expressions
+        cleaned = cleaned.replace(/\\alpha/g, 'α');
+        cleaned = cleaned.replace(/\\beta/g, 'β');
+        cleaned = cleaned.replace(/\\gamma/g, 'γ');
+        cleaned = cleaned.replace(/\\delta/g, 'δ');
+        cleaned = cleaned.replace(/\\epsilon/g, 'ε');
+        cleaned = cleaned.replace(/\\theta/g, 'θ');
+        cleaned = cleaned.replace(/\\lambda/g, 'λ');
+        cleaned = cleaned.replace(/\\mu/g, 'μ');
+        cleaned = cleaned.replace(/\\pi/g, 'π');
+        cleaned = cleaned.replace(/\\sigma/g, 'σ');
+        cleaned = cleaned.replace(/\\phi/g, 'φ');
+        cleaned = cleaned.replace(/\\omega/g, 'ω');
+        
+        // Convert mathematical operators
+        cleaned = cleaned.replace(/\\times/g, '×');
+        cleaned = cleaned.replace(/\\div/g, '÷');
+        cleaned = cleaned.replace(/\\pm/g, '±');
+        cleaned = cleaned.replace(/\\leq/g, '≤');
+        cleaned = cleaned.replace(/\\geq/g, '≥');
+        cleaned = cleaned.replace(/\\neq/g, '≠');
+        cleaned = cleaned.replace(/\\approx/g, '≈');
+        cleaned = cleaned.replace(/\\infty/g, '∞');
+        cleaned = cleaned.replace(/\\sqrt{([^}]*)}/g, '√($1)');
+        cleaned = cleaned.replace(/\\frac{([^}]*)}{([^}]*)}/g, '($1)/($2)');
+        cleaned = cleaned.replace(/\^{([^}]*)}/g, '^($1)');
+        cleaned = cleaned.replace(/_{([^}]*)}/g, '_($1)');
+        
+        // Clean up remaining LaTeX commands
+        cleaned = cleaned.replace(/\\[a-zA-Z]+{([^}]*)}/g, '$1');
+        cleaned = cleaned.replace(/\\[a-zA-Z]+/g, '');
+        cleaned = cleaned.replace(/[{}]/g, '');
+        
+        // Handle HTML entities last
+        cleaned = cleaned.replace(/&[a-zA-Z0-9#]+;/g, ' ');
+        
         return cleaned.trim();
+      };
+
+      // Helper function to convert LaTeX expressions to readable text
+      const convertLatexToText = (latex: string): string => {
+        let text = latex;
+        
+        // Common mathematical functions
+        text = text.replace(/\\sin/g, 'sin');
+        text = text.replace(/\\cos/g, 'cos');
+        text = text.replace(/\\tan/g, 'tan');
+        text = text.replace(/\\log/g, 'log');
+        text = text.replace(/\\ln/g, 'ln');
+        text = text.replace(/\\sum/g, 'Σ');
+        text = text.replace(/\\int/g, '∫');
+        text = text.replace(/\\lim/g, 'lim');
+        
+        return text;
       };
 
       // Enhanced helper function to add text with better formatting and strict margin control

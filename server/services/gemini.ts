@@ -145,6 +145,15 @@ QUESTION TYPES GUIDE:
 - Problem Solving: Step-by-step mathematical or analytical problems
 - Essay: Requires detailed explanation or analysis (2-3 paragraphs)
 
+MATHEMATICAL FORMATTING RULES:
+- Use Unicode symbols instead of LaTeX: α β γ θ π σ ω × ÷ ± ≤ ≥ ≠ ≈ ∞
+- For fractions, use notation like: (a+b)/(c+d) or a/b
+- For exponents, use: x^2, x^(n+1), e^(2x)
+- For subscripts, use: x_1, A_n, H_2O
+- For square roots, use: √(x+1) or sqrt(x+1)
+- For mathematical functions: sin(x), cos(θ), log(n), ln(x)
+- Avoid complex LaTeX expressions - keep mathematical notation simple and readable
+
 DIFFICULTY LEVELS:
 - Beginner: Basic concepts, definitions, simple applications
 - Intermediate: Analysis, comparison, multi-step problems
