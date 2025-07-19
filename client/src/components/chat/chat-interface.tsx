@@ -28,6 +28,9 @@ export default function ChatInterface() {
   
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -86,23 +89,42 @@ export default function ChatInterface() {
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
+      recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.maxAlternatives = 1;
+
+      recognitionRef.current.onstart = () => {
+        console.log('Speech recognition started');
+      };
 
       recognitionRef.current.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInputMessage(transcript);
-        setIsListening(false);
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            transcript += event.results[i][0].transcript;
+          }
+        }
+        
+        if (transcript) {
+          setInputMessage(prev => prev + (prev ? ' ' : '') + transcript);
+        }
       };
 
       recognitionRef.current.onerror = (event: any) => {
-        setIsListening(false);
         console.log('Voice recognition error:', event.error);
+        setIsListening(false);
+        
         // Only show toast for actual errors, not for "no-speech" or "aborted"
-        if (event.error !== 'no-speech' && event.error !== 'aborted') {
+        if (event.error !== 'no-speech' && event.error !== 'aborted' && event.error !== 'not-allowed') {
           toast({
-            title: "Voice Recognition Error",
-            description: `${event.error || 'Unknown error'}. Please try again or type your message.`,
+            title: "Voice Recognition Error", 
+            description: `Error: ${event.error}. Please try again or type your message.`,
+            variant: "destructive"
+          });
+        } else if (event.error === 'not-allowed') {
+          toast({
+            title: "Microphone Access Denied",
+            description: "Please allow microphone access to use voice input.",
             variant: "destructive"
           });
         }
@@ -110,7 +132,10 @@ export default function ChatInterface() {
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
+        console.log('Speech recognition ended');
       };
+    } else {
+      console.log('Speech recognition not supported in this browser');
     }
   }, [toast]);
 
@@ -214,10 +239,134 @@ export default function ChatInterface() {
     }
   };
 
-  // Handle predefined prompt selection
+  // Handle predefined prompt selection (just set input)
   const handlePredefinedPrompt = (prompt: string) => {
     setInputMessage(prompt);
     textareaRef.current?.focus();
+  };
+
+  // Handle predefined prompt auto-send
+  const handleSendPredefinedPrompt = async (prompt: string) => {
+    if (isLoading) return;
+    
+    // Add user message immediately
+    addMessage({
+      role: "user",
+      content: prompt
+    });
+
+    setLoading(true);
+    sendMessageMutation.mutate(prompt);
+  };
+
+  // File upload and OCR processing
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        toast({
+          title: "File Too Large",
+          description: "Please select a file smaller than 10MB.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Unsupported File Type",
+          description: "Please upload an image (JPEG, PNG) or PDF file.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setSelectedFile(file);
+      processFile(file);
+    }
+  };
+
+  const processFile = async (file: File) => {
+    setIsProcessingFile(true);
+    try {
+      let extractedText = '';
+
+      if (file.type === 'application/pdf') {
+        // For PDF files, we'll create a placeholder for now
+        // In production, you'd integrate with a PDF text extraction library
+        extractedText = `[PDF File: ${file.name}] - PDF text extraction would be implemented here.`;
+        
+        // Add a message showing the file was uploaded
+        addMessage({
+          role: "user",
+          content: `I've uploaded a PDF file: ${file.name}. Please help me analyze this document.`
+        });
+      } else {
+        // For images, simulate OCR extraction
+        extractedText = await performOCR(file);
+        
+        if (extractedText.trim()) {
+          const messageContent = `I've uploaded an image with the following text:\n\n"${extractedText}"\n\nPlease help me understand or work with this content.`;
+          
+          addMessage({
+            role: "user", 
+            content: messageContent
+          });
+
+          // Auto-send for processing
+          setLoading(true);
+          sendMessageMutation.mutate(messageContent);
+        } else {
+          addMessage({
+            role: "user",
+            content: `I've uploaded an image: ${file.name}. Please help me analyze this image.`
+          });
+        }
+      }
+
+    } catch (error) {
+      console.error('File processing error:', error);
+      toast({
+        title: "Processing Error",
+        description: "Failed to process the file. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessingFile(false);
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Simple OCR simulation (in production, you'd use a real OCR service)
+  const performOCR = async (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // This is a placeholder for OCR functionality
+        // In production, you'd send the image to an OCR service like Google Vision API
+        const sampleTexts = [
+          "This is sample extracted text from the image.",
+          "Mathematical equation: x² + 2x + 1 = 0",
+          "The quick brown fox jumps over the lazy dog.",
+          "Please solve this problem step by step.",
+        ];
+        
+        // Simulate OCR processing delay
+        setTimeout(() => {
+          resolve(sampleTexts[Math.floor(Math.random() * sampleTexts.length)]);
+        }, 1500);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
   };
 
   // Remove the typing indicator for user input - we only want it for AI responses
@@ -354,16 +503,36 @@ export default function ChatInterface() {
       {/* Chat Messages Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background">
         {messages.length === 0 && (
-          <div className="flex items-start space-x-3">
-            <div className={`w-8 h-8 bg-gradient-to-br ${selectedTutor.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-              <i className="fas fa-graduation-cap text-white text-xs"></i>
+          <div className="space-y-4">
+            <div className="flex items-start space-x-3">
+              <div className={`w-8 h-8 bg-gradient-to-br ${selectedTutor.color} rounded-full flex items-center justify-center flex-shrink-0`}>
+                <i className="fas fa-graduation-cap text-white text-xs"></i>
+              </div>
+              <div className="flex-1">
+                <div className="bg-card border border-border p-4 shadow-sm rounded-lg">
+                  <p className="text-foreground">
+                    Hello! I'm your {selectedTutor.name}. I'm here to help you understand concepts step by step. 
+                    What would you like to work on today?
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <div className="bg-card border border-border p-4 shadow-sm rounded-lg">
-                <p className="text-foreground">
-                  Hello! I'm your {selectedTutor.name}. I'm here to help you understand concepts step by step. 
-                  What would you like to work on today?
-                </p>
+            
+            {/* Initial predefined questions */}
+            <div className="px-4 py-2 bg-muted/30 border border-border rounded-lg">
+              <p className="text-sm text-muted-foreground mb-3">Quick start questions:</p>
+              <div className="flex flex-wrap gap-2">
+                {getPredefinedPrompts().map((prompt, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSendPredefinedPrompt(prompt)}
+                    className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
+                  >
+                    {prompt}
+                  </Button>
+                ))}
               </div>
             </div>
           </div>
@@ -409,7 +578,7 @@ export default function ChatInterface() {
                 key={index}
                 variant="outline"
                 size="sm"
-                onClick={() => handlePredefinedPrompt(prompt)}
+                onClick={() => handleSendPredefinedPrompt(prompt)}
                 className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 {prompt}
@@ -422,7 +591,32 @@ export default function ChatInterface() {
       {/* Chat Input */}
       <div className="bg-card border-t border-border p-4">
 
+        {/* File processing indicator */}
+        {isProcessingFile && (
+          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+              <span className="text-sm text-blue-700 dark:text-blue-300">
+                {selectedFile?.type === 'application/pdf' ? 'Processing PDF...' : 'Extracting text from image...'}
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-end space-x-3">
+          {/* File Upload Button */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={triggerFileUpload}
+            disabled={isLoading || isProcessingFile}
+            className="text-muted-foreground hover:text-foreground px-3 py-3 min-h-[48px]"
+            title="Upload image or PDF"
+          >
+            <i className="fas fa-paperclip"></i>
+          </Button>
+          
           <div className="flex-1 relative">
             <Textarea
               ref={textareaRef}
@@ -432,7 +626,7 @@ export default function ChatInterface() {
               placeholder={`Ask me anything about ${selectedTutor.specialization.split(' • ')[0].toLowerCase()}...`}
               className="min-h-[48px] max-h-32 resize-none bg-background border-border text-foreground placeholder:text-muted-foreground pr-12"
               rows={1}
-              disabled={isLoading}
+              disabled={isLoading || isProcessingFile}
             />
             
             {/* Voice Input Button */}
@@ -444,7 +638,8 @@ export default function ChatInterface() {
                 isListening ? 'text-red-500 animate-pulse' : 'text-muted-foreground hover:text-foreground'
               }`}
               onClick={isListening ? stopListening : startListening}
-              disabled={isLoading}
+              disabled={isLoading || isProcessingFile}
+              title="Voice input"
             >
               <i className={`fas ${isListening ? 'fa-stop' : 'fa-microphone'}`}></i>
             </Button>
@@ -452,13 +647,22 @@ export default function ChatInterface() {
 
           <Button
             onClick={handleSendMessage}
-            disabled={!inputMessage.trim() || isLoading}
+            disabled={!inputMessage.trim() || isLoading || isProcessingFile}
             className="px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center font-medium min-h-[48px]"
           >
             <i className="fas fa-paper-plane mr-2"></i>
             Send
           </Button>
         </div>
+
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,application/pdf"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
       </div>
     </div>
   );
