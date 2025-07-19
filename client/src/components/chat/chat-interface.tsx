@@ -335,6 +335,44 @@ export default function ChatInterface() {
     sendMessageMutation.mutate(message.trim());
   };
 
+  // Handle explain with video request
+  const handleExplainWithVideo = (content: string) => {
+    // Extract key concepts and create a targeted search query
+    const searchQuery = content.replace(/[#*`\n]/g, ' ').substring(0, 100) + ' tutorial explanation';
+    
+    // Find YouTube mutation and trigger it
+    const response = apiRequest('POST', '/api/youtube/search', { query: searchQuery })
+      .then(res => res.json())
+      .then(data => {
+        if (data.videoUrl) {
+          const videoMessage = {
+            id: Date.now(),
+            role: 'assistant' as const,
+            content: `Here's a video explanation for: "${searchQuery.replace(' tutorial explanation', '')}"`,
+            videoUrl: data.videoUrl,
+            timestamp: new Date()
+          };
+          
+          addMessage(videoMessage);
+          queryClient.invalidateQueries({ queryKey: ['/api/chat', sessionId, 'messages'] });
+        } else {
+          toast({
+            title: "No videos found",
+            description: "Sorry, couldn't find relevant educational videos for this topic.",
+            variant: "destructive"
+          });
+        }
+      })
+      .catch(error => {
+        console.error("Video search error:", error);
+        toast({
+          title: "Video search failed",
+          description: "There was an error searching for educational videos.",
+          variant: "destructive"
+        });
+      });
+  };
+
 
   // File upload and OCR processing
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -677,12 +715,12 @@ export default function ChatInterface() {
 
 
         
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <MessageBubble 
-            key={message.id} 
+            key={`${message.id}-${index}-${message.timestamp?.getTime() || Date.now()}`} 
             message={message} 
             tutorPersona={selectedTutor}
-            onYouTubeSearch={handleYouTubeSearch}
+            onExplainWithVideo={handleExplainWithVideo}
           />
         ))}
         

@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from "@/components/ui/button";
-import { MessageReactions } from './message-reactions';
+import { Play } from "lucide-react";
 
 interface Message {
   id: number;
@@ -24,10 +24,10 @@ interface TutorPersona {
 interface MessageBubbleProps {
   message: Message;
   tutorPersona: TutorPersona;
-  onYouTubeSearch?: (query: string) => void;
+  onExplainWithVideo?: (content: string) => void;
 }
 
-export default function MessageBubble({ message, tutorPersona, onYouTubeSearch }: MessageBubbleProps) {
+export default function MessageBubble({ message, tutorPersona, onExplainWithVideo }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
   const extractYouTubeId = (url: string): string | null => {
@@ -35,13 +35,11 @@ export default function MessageBubble({ message, tutorPersona, onYouTubeSearch }
     return match ? match[1] : null;
   };
 
-  const handleSearchMore = () => {
-    if (onYouTubeSearch) {
-      // Extract key concepts from the message for better search
-      const searchQuery = message.content.length > 100 
-        ? message.content.substring(0, 100) 
-        : message.content;
-      onYouTubeSearch(searchQuery);
+  const handleExplainWithVideo = () => {
+    if (onExplainWithVideo && !isUser) {
+      // Extract key concepts from the assistant's message for video search
+      const searchQuery = message.content.replace(/[#*`]/g, '').substring(0, 200);
+      onExplainWithVideo(searchQuery);
     }
   };
 
@@ -127,28 +125,39 @@ export default function MessageBubble({ message, tutorPersona, onYouTubeSearch }
                 </div>
               )}
               
-              {/* Search for more videos button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSearchMore}
-                className="mt-2 text-xs text-blue-600 hover:text-blue-800"
-              >
-                <i className="fab fa-youtube mr-1"></i>
-                Find more videos
-              </Button>
+
             </div>
           )}
         </div>
         
-        {/* Message metadata and reactions */}
-        <div className={`mt-1 ${isUser ? 'text-right' : ''}`}>
-          <div className="text-xs text-muted-foreground mb-1">
-            {isUser ? 'You' : tutorPersona.name}
+        {/* Explain with Video Button - Only for assistant messages */}
+        {!isUser && (
+          <div className="mt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExplainWithVideo}
+              className="text-xs"
+            >
+              <Play className="w-3 h-3 mr-2 text-red-500" />
+              Explain with Video
+            </Button>
           </div>
-          
-          {/* Reactions */}
-          <MessageReactions message={message} />
+        )}
+        
+        {/* Message metadata */}
+        <div className={`mt-2 ${isUser ? 'text-right' : ''}`}>
+          <div className="text-xs text-muted-foreground">
+            {isUser ? 'You' : tutorPersona.name}
+            {message.timestamp && (
+              <span className="ml-2">
+                {new Date(message.timestamp).toLocaleTimeString([], { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
