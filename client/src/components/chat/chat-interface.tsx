@@ -235,6 +235,14 @@ export default function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Helper function to send a message directly
+  const sendMessage = async (message: string) => {
+    if (!message.trim() || isLoading) return;
+
+    setLoading(true);
+    sendMessageMutation.mutate(message.trim());
+  };
+
   const sendMessageMutation = useMutation({
     mutationFn: async (message: string) => {
       const messageHistory = messages.slice(-10).map(msg => ({
@@ -338,14 +346,6 @@ export default function ChatInterface() {
   const handlePredefinedPrompt = (prompt: string) => {
     setInputMessage(prompt);
     textareaRef.current?.focus();
-  };
-
-  // Helper function to send a message directly
-  const sendMessage = async (message: string) => {
-    if (!message.trim() || isLoading) return;
-
-    setLoading(true);
-    sendMessageMutation.mutate(message.trim());
   };
 
   // Handle explain with video request
