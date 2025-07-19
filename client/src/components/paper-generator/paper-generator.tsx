@@ -167,7 +167,7 @@ export default function PaperGenerator() {
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch('/api/upload/resume', {
+      const response = await fetch('/api/upload/extract', {
         method: 'POST',
         body: formData,
       });
@@ -295,15 +295,22 @@ export default function PaperGenerator() {
       });
       return;
     }
+    
+    // Ensure we have at least one question type selected
+    if (config.questionTypes.length === 0) {
+      toast({
+        title: "Missing Question Types",
+        description: "Please select at least one question type.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    console.log("Generating paper with config:", config);
     generatePaperMutation.mutate(config);
   };
 
-  const handlePreview = () => {
-    toast({
-      title: "Preview",
-      description: "Preview functionality would show sample questions.",
-    });
-  };
+
 
   const clearUploadedFile = () => {
     setExtractedText('');
@@ -545,10 +552,7 @@ export default function PaperGenerator() {
               )}
             </div>
             <div className="flex space-x-3">
-              <Button variant="outline" onClick={handlePreview}>
-                <i className="fas fa-eye mr-2"></i>
-                Preview
-              </Button>
+
               {generatedPaper && (
                 <Button variant="outline" onClick={downloadPaper}>
                   <i className="fas fa-download mr-2"></i>

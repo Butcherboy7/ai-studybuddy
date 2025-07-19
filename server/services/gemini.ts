@@ -176,12 +176,24 @@ Return a JSON array with this EXACT format:
       },
     });
 
-    const rawJson = response.text;
-    if (rawJson) {
-      return JSON.parse(rawJson);
-    } else {
+    let responseText = response.text;
+    if (!responseText) {
       throw new Error("Empty response from model");
     }
+    
+    // Clean up the response - remove markdown code blocks if present
+    responseText = responseText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    
+    // Try to extract JSON from the response if it contains other text
+    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+    if (jsonMatch) {
+      responseText = jsonMatch[0];
+    }
+    
+    // Parse the JSON response
+    const result = JSON.parse(responseText);
+    
+    return result;
   } catch (error) {
     console.error("Question generation error:", error);
     throw new Error("Failed to generate practice questions");
