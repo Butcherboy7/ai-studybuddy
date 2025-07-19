@@ -71,10 +71,11 @@ export async function generateChatResponse(
     const additionalGuidelines = `
     
     Additional guidelines:
+    - Keep responses concise and focused (2-3 short paragraphs maximum)
     - Always be encouraging and supportive
     - Ask follow-up questions to check understanding
     - Provide examples and analogies to clarify concepts
-    - If the topic would benefit from visual aids, mention that educational videos are available
+    - Break complex topics into digestible chunks
     - Keep explanations appropriate for the student's level
     - Encourage active learning and participation`;
 

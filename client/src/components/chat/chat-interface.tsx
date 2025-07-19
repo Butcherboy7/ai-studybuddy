@@ -338,27 +338,37 @@ export default function ChatInterface() {
   // Handle explain with video request
   const handleExplainWithVideo = (content: string) => {
     // Extract key concepts and create a targeted search query
-    const searchQuery = content.replace(/[#*`\n]/g, ' ').substring(0, 100) + ' tutorial explanation';
+    const searchQuery = content.replace(/[#*`\n]/g, ' ').trim().substring(0, 80) + ' tutorial';
     
-    // Find YouTube mutation and trigger it
-    const response = apiRequest('POST', '/api/youtube/search', { query: searchQuery })
+    toast({
+      title: "Searching for video...",
+      description: "Finding educational content for this topic."
+    });
+    
+    // Use API request properly
+    apiRequest('POST', '/api/youtube/search', { query: searchQuery })
       .then(res => res.json())
       .then(data => {
-        if (data.videoUrl) {
+        if (data && data.videoUrl) {
           const videoMessage = {
             id: Date.now(),
             role: 'assistant' as const,
-            content: `Here's a video explanation for: "${searchQuery.replace(' tutorial explanation', '')}"`,
+            content: `🎥 Video explanation for: "${searchQuery.replace(' tutorial', '')}"`,
             videoUrl: data.videoUrl,
             timestamp: new Date()
           };
           
           addMessage(videoMessage);
           queryClient.invalidateQueries({ queryKey: ['/api/chat', sessionId, 'messages'] });
+          
+          toast({
+            title: "Video found!",
+            description: "Educational video has been added to the chat."
+          });
         } else {
           toast({
             title: "No videos found",
-            description: "Sorry, couldn't find relevant educational videos for this topic.",
+            description: "Couldn't find relevant educational videos for this topic.",
             variant: "destructive"
           });
         }
@@ -367,7 +377,7 @@ export default function ChatInterface() {
         console.error("Video search error:", error);
         toast({
           title: "Video search failed",
-          description: "There was an error searching for educational videos.",
+          description: "Error occurred while searching for videos. Please try again.",
           variant: "destructive"
         });
       });
@@ -750,10 +760,10 @@ export default function ChatInterface() {
         {showScrollButton && (
           <button
             onClick={scrollToBottom}
-            className="fixed bottom-24 right-6 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-all z-10 flex items-center justify-center"
+            className="fixed bottom-24 right-6 w-12 h-12 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-all z-20 flex items-center justify-center animate-bounce"
             title="Scroll to bottom"
           >
-            <i className="fas fa-chevron-down"></i>
+            <i className="fas fa-arrow-down text-lg"></i>
           </button>
         )}
       </div>

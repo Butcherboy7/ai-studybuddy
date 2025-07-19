@@ -272,6 +272,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // YouTube search endpoint
+  app.post('/api/youtube/search', async (req, res) => {
+    try {
+      const { query } = req.body;
+      
+      if (!query) {
+        return res.status(400).json({ error: 'Search query is required' });
+      }
+
+      console.log('YouTube search query:', query);
+      const video = await searchEducationalVideo(query);
+      console.log('YouTube search result:', video);
+      
+      if (video) {
+        res.json({ 
+          success: true, 
+          videoUrl: video.url,
+          title: video.title,
+          description: video.description 
+        });
+      } else {
+        res.json({ 
+          success: false, 
+          message: 'No educational videos found for this query',
+          videoUrl: null
+        });
+      }
+
+    } catch (error) {
+      console.error('YouTube search error:', error);
+      res.status(500).json({ 
+        error: 'Failed to search for videos',
+        success: false,
+        videoUrl: null 
+      });
+    }
+  });
+
   // Add reaction to message
   app.post("/api/messages/:messageId/reactions", async (req, res) => {
     try {

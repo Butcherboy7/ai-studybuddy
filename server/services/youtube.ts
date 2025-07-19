@@ -16,7 +16,7 @@ interface CourseResult {
 
 export async function searchEducationalVideo(query: string): Promise<YouTubeSearchResult | null> {
   try {
-    const apiKey = process.env.YOUTUBE_API_KEY || process.env.GOOGLE_YOUTUBE_API_KEY || "";
+    const apiKey = process.env.YOUTUBE_API_KEY;
     
     if (!apiKey) {
       console.warn("YouTube API key not configured, skipping video search");
