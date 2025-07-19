@@ -96,7 +96,7 @@ export default function ChatInterface() {
     return promptSets[tutorName as keyof typeof promptSets] || promptSets["General Tutor"];
   };
 
-  // Initialize speech recognition
+  // Initialize speech recognition (without sendMessage dependency)
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -172,20 +172,7 @@ export default function ChatInterface() {
     } else {
       console.log('Speech recognition not supported in this browser');
     }
-
-    // Custom event listener for message sending from action buttons
-    const handleSendMessage = (event: CustomEvent) => {
-      if (event.detail && typeof event.detail === 'string') {
-        sendMessage(event.detail);
-      }
-    };
-
-    window.addEventListener('sendMessage', handleSendMessage as EventListener);
-    
-    return () => {
-      window.removeEventListener('sendMessage', handleSendMessage as EventListener);
-    };
-  }, [toast, sendMessage]);
+  }, [toast]);
 
   // Load existing messages for the session
   const { data: existingMessages } = useQuery({
@@ -280,6 +267,21 @@ export default function ChatInterface() {
     setLoading(true);
     sendMessageMutation.mutate(message.trim());
   }, [isLoading, sendMessageMutation]);
+
+  // Custom event listener for message sending from action buttons (defined after sendMessage)
+  useEffect(() => {
+    const handleSendMessage = (event: CustomEvent) => {
+      if (event.detail && typeof event.detail === 'string') {
+        sendMessage(event.detail);
+      }
+    };
+
+    window.addEventListener('sendMessage', handleSendMessage as EventListener);
+    
+    return () => {
+      window.removeEventListener('sendMessage', handleSendMessage as EventListener);
+    };
+  }, [sendMessage]);
 
   // Voice recognition functions
   const startListening = async () => {
