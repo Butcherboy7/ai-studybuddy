@@ -459,7 +459,6 @@ export default function ChatInterface() {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-foreground">{selectedTutor.name}</h2>
-              <p className="text-sm text-muted-foreground">Ready to help with your questions</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
