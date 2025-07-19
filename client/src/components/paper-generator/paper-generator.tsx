@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import jsPDF from 'jspdf';
+import { marked } from 'marked';
 
 interface PaperConfig {
   subject: string;
@@ -37,7 +38,7 @@ export default function PaperGenerator() {
   const [generatedPaper, setGeneratedPaper] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Download paper as PDF
+  // Download paper as PDF with enhanced formatting
   const downloadPaper = (paperData = generatedPaper) => {
     if (!paperData) return;
     
@@ -46,13 +47,29 @@ export default function PaperGenerator() {
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
-      const lineHeight = 7;
+      const margin = 15;
+      const lineHeight = 6;
       let yPosition = margin;
 
-      // Helper function to add text with word wrapping
-      const addText = (text: string, fontSize = 10, isBold = false, isCenter = false) => {
-        if (yPosition > pageHeight - margin) {
+      // Helper function to clean and format text
+      const cleanText = (text: string) => {
+        // Remove markdown and HTML formatting
+        let cleaned = text.replace(/\*\*(.*?)\*\*/g, '$1'); // Bold
+        cleaned = cleaned.replace(/\*(.*?)\*/g, '$1'); // Italic
+        cleaned = cleaned.replace(/`(.*?)`/g, '$1'); // Code
+        cleaned = cleaned.replace(/<[^>]*>/g, ''); // HTML tags
+        cleaned = cleaned.replace(/&[a-zA-Z0-9#]+;/g, ' '); // HTML entities
+        return cleaned.trim();
+      };
+
+      // Enhanced helper function to add text with better formatting
+      const addText = (text: string, fontSize = 10, isBold = false, isCenter = false, indent = 0) => {
+        if (!text.trim()) {
+          yPosition += lineHeight / 2;
+          return;
+        }
+
+        if (yPosition > pageHeight - margin - 10) {
           pdf.addPage();
           yPosition = margin;
         }
@@ -60,61 +77,107 @@ export default function PaperGenerator() {
         pdf.setFontSize(fontSize);
         pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
         
-        const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+        const cleanedText = cleanText(text);
+        const maxWidth = pageWidth - 2 * margin - indent;
+        const lines = pdf.splitTextToSize(cleanedText, maxWidth);
         
         lines.forEach((line: string) => {
-          if (yPosition > pageHeight - margin) {
+          if (yPosition > pageHeight - margin - 10) {
             pdf.addPage();
             yPosition = margin;
           }
           
-          const xPosition = isCenter ? pageWidth / 2 : margin;
+          const xPosition = isCenter ? pageWidth / 2 : margin + indent;
           const align = isCenter ? 'center' : 'left';
           
           pdf.text(line, xPosition, yPosition, { align });
           yPosition += lineHeight;
         });
         
-        yPosition += 2; // Extra spacing after each text block
+        yPosition += 1; // Small spacing after each text block
       };
 
-      // Header
-      addText(`${config.subject.toUpperCase()} PRACTICE PAPER`, 16, true, true);
-      addText(`Topic: ${config.topic}`, 12, false, true);
-      addText(`Difficulty: ${config.difficulty} | Questions: ${config.questionCount} | Time: ${config.timeLimit} minutes`, 10, false, true);
-      addText('');
-      addText('Name: ___________________________     Date: _______________     Score: ___/___', 10);
-      addText('');
-      addText('═'.repeat(50), 12);
-      addText('');
-      
-      // Questions
-      paperData.questions?.forEach((question: any, index: number) => {
-        addText(`QUESTION ${index + 1}                                    [${question.points || 5} points]`, 12, true);
-        addText('-'.repeat(50));
-        addText('');
-        addText(question.question, 11);
-        addText('');
+      // Add decorative border
+      pdf.setDrawColor(0, 0, 0);
+      pdf.setLineWidth(0.5);
+      pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
 
+      // Header with enhanced styling
+      yPosition = 25;
+      addText(`${config.subject.toUpperCase()} PRACTICE PAPER`, 18, true, true);
+      yPosition += 3;
+      addText(`Topic: ${config.topic}`, 13, true, true);
+      yPosition += 3;
+      addText(`Difficulty: ${config.difficulty} | Questions: ${paperData.questions?.length || config.questionCount} | Time: ${config.timeLimit} minutes`, 10, false, true);
+      yPosition += 8;
+      
+      // Student info section
+      addText('Student Information:', 11, true);
+      yPosition += 2;
+      addText('Name: ________________________________     Date: ________________', 10);
+      yPosition += 2;
+      addText('Class: _______________     Roll No: _______________     Score: ______ / ______', 10);
+      yPosition += 8;
+      
+      // Separator line
+      pdf.setLineWidth(0.3);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      
+      // Instructions
+      addText('INSTRUCTIONS:', 11, true);
+      yPosition += 2;
+      addText('• Read all questions carefully before answering', 9, false, false, 5);
+      addText('• Answer all questions in the space provided', 9, false, false, 5);
+      addText('• Show all working for calculation questions', 9, false, false, 5);
+      addText('• Use clear handwriting and proper grammar', 9, false, false, 5);
+      yPosition += 8;
+
+      // Another separator
+      pdf.setLineWidth(0.3);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      
+      // Questions with enhanced formatting
+      paperData.questions?.forEach((question: any, index: number) => {
+        // Question header
+        addText(`Question ${index + 1}`, 12, true);
+        yPosition += 1;
+        
+        // Question text with better spacing
+        addText(question.question, 11, false, false, 0);
+        yPosition += 3;
+
+        // Handle different question types
         if (question.options && question.options.length > 0) {
+          // Multiple choice options
           question.options.forEach((option: string, optIndex: number) => {
             const letter = String.fromCharCode(65 + optIndex); // A, B, C, D
-            addText(`${letter}) ${option}`, 10);
+            addText(`${letter}) ${cleanText(option)}`, 10, false, false, 5);
           });
-          addText('');
-          addText('Answer: ______', 10);
+          yPosition += 5;
         } else {
-          // For problem-solving questions, provide space for work
-          addText('Solution:', 10, true);
-          addText('');
-          for (let i = 0; i < 6; i++) {
-            addText('_'.repeat(80), 10);
-          }
+          // Open-ended question - no answer space as requested
+          yPosition += 3;
         }
         
-        addText('');
-        addText('');
+        // Question separator
+        if (index < paperData.questions.length - 1) {
+          pdf.setLineWidth(0.1);
+          pdf.line(margin + 5, yPosition, pageWidth - margin - 5, yPosition);
+          yPosition += 6;
+        }
       });
+
+      // Footer
+      const totalPages = pdf.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 5, { align: 'right' });
+        pdf.text(`${config.subject} - ${config.topic}`, margin, pageHeight - 5);
+      }
 
       // Save the PDF
       const fileName = `${config.subject}_${config.topic.replace(/\s+/g, '_')}_Practice_Paper.pdf`;
