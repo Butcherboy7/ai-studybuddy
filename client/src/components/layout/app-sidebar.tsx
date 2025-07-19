@@ -41,7 +41,7 @@ export default function AppSidebar() {
 
   return (
     <div className={cn(
-      "fixed inset-y-0 left-0 z-50 flex flex-col transition-sidebar border-r hidden md:flex",
+      "fixed inset-y-0 left-0 z-50 flex flex-col border-r hidden md:flex transition-all duration-500 ease-in-out",
       sidebarCollapsed ? "sidebar-width-collapsed" : "sidebar-width"
     )}
     style={{
@@ -56,41 +56,41 @@ export default function AppSidebar() {
       )}
       style={{ borderColor: 'var(--sidebar-border)' }}>
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-            <i className="fas fa-graduation-cap text-white text-sm"></i>
-          </div>
+          <button
+            onClick={toggleSidebar}
+            className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <i className="fas fa-graduation-cap text-white text-sm group-hover:rotate-12 transition-transform duration-300"></i>
+          </button>
           {!sidebarCollapsed && (
-            <h1 className="text-xl font-bold text-primary">EduTutor</h1>
+            <h1 className="text-xl font-bold text-primary transition-all duration-300">EduTutor</h1>
           )}
         </div>
         
         {!sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-muted/50"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-800 dark:hover:to-purple-800 shadow-md hover:shadow-lg hover:scale-105 border border-slate-300 dark:border-slate-600"
             style={{ 
-              backgroundColor: 'var(--card-bg)', 
-              border: `1px solid var(--border)`,
-              color: 'var(--text-secondary)'
+              color: 'var(--text-primary)'
             }}
             title="Collapse sidebar"
           >
-            <i className="fas fa-chevron-left text-sm"></i>
+            <i className="fas fa-chevron-left text-sm transition-transform duration-300 hover:-translate-x-0.5"></i>
           </button>
         )}
         
         {sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="absolute top-4 right-2 w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-muted/50"
+            className="absolute top-4 right-2 w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-800 dark:hover:to-purple-800 shadow-md hover:shadow-lg hover:scale-105 border border-slate-300 dark:border-slate-600"
             style={{ 
-              backgroundColor: 'var(--card-bg)', 
-              border: `1px solid var(--border)`,
-              color: 'var(--text-secondary)'
+              color: 'var(--text-primary)'
             }}
             title="Expand sidebar"
           >
-            <i className="fas fa-chevron-right text-sm"></i>
+            <i className="fas fa-chevron-right text-sm transition-transform duration-300 hover:translate-x-0.5"></i>
           </button>
         )}
       </div>
@@ -102,17 +102,17 @@ export default function AppSidebar() {
             key={item.id}
             onClick={() => setCurrentView(item.view)}
             className={cn(
-              "w-full flex items-center py-3 text-sm font-medium rounded-xl transition-all group relative",
+              "w-full flex items-center py-3 text-sm font-medium rounded-xl transition-all duration-300 group relative transform hover:scale-105",
               sidebarCollapsed ? "px-2 justify-center" : "px-4",
               currentView === item.view
-                ? "bg-primary/10 text-primary shadow-sm"
-                : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                ? "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-primary shadow-lg border border-indigo-200 dark:border-indigo-700"
+                : "hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 dark:hover:from-slate-800 dark:hover:to-slate-700 text-muted-foreground hover:text-foreground hover:shadow-md"
             )}
             title={sidebarCollapsed ? item.label : undefined}
           >
             <i className={cn(
               item.icon, 
-              "text-lg transition-all",
+              "text-lg transition-all duration-300 group-hover:scale-110",
               sidebarCollapsed ? "" : "mr-3",
               currentView === item.view ? "icon-primary" : "icon"
             )}></i>
@@ -120,7 +120,7 @@ export default function AppSidebar() {
               <span className="font-medium">{item.label}</span>
             )}
             {currentView === item.view && !sidebarCollapsed && (
-              <div className="absolute right-3 w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div className="absolute right-3 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-pulse shadow-sm"></div>
             )}
           </button>
         ))}
@@ -178,10 +178,10 @@ export default function AppSidebar() {
           <button
             onClick={toggleTheme}
             className={cn(
-              "flex items-center font-medium rounded-xl transition-all",
+              "flex items-center font-medium rounded-xl transition-all duration-300 transform hover:scale-105",
               sidebarCollapsed 
-                ? "w-12 h-12 justify-center" 
-                : "w-full px-4 py-3 justify-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800"
+                ? "w-12 h-12 justify-center hover:bg-gradient-to-r hover:from-amber-50 hover:to-blue-50 dark:hover:from-amber-900/20 dark:hover:to-blue-900/20" 
+                : "w-full px-4 py-3 justify-center bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 hover:from-amber-50 hover:to-blue-50 dark:hover:from-amber-900/30 dark:hover:to-blue-900/30 shadow-md hover:shadow-lg"
             )}
             style={{ color: 'var(--text-secondary)' }}
             title={sidebarCollapsed ? (isDark ? "Switch to Light Mode" : "Switch to Dark Mode") : undefined}
@@ -200,10 +200,10 @@ export default function AppSidebar() {
           <button
             onClick={clearSession}
             className={cn(
-              "flex items-center font-medium rounded-xl transition-all",
+              "flex items-center font-medium rounded-xl transition-all duration-300 transform hover:scale-105",
               sidebarCollapsed 
-                ? "w-12 h-12 justify-center hover:bg-red-50 dark:hover:bg-red-900/20" 
-                : "w-full px-4 py-3 justify-center hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-800"
+                ? "w-12 h-12 justify-center hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 dark:hover:from-red-900/20 dark:hover:to-pink-900/20" 
+                : "w-full px-4 py-3 justify-center hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 dark:hover:from-red-900/20 dark:hover:to-pink-900/20 border border-red-200 dark:border-red-700 shadow-md hover:shadow-lg"
             )}
             style={{ color: 'var(--text-secondary)' }}
             title={sidebarCollapsed ? "Clear Session" : undefined}
