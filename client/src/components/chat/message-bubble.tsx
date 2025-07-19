@@ -3,9 +3,10 @@ import { type Message, type TutorPersona } from "@/store/appStore";
 interface MessageBubbleProps {
   message: Message;
   tutorPersona: TutorPersona;
+  onYouTubeSearch?: (query: string) => void;
 }
 
-export default function MessageBubble({ message, tutorPersona }: MessageBubbleProps) {
+export default function MessageBubble({ message, tutorPersona, onYouTubeSearch }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
   return (
@@ -17,6 +18,20 @@ export default function MessageBubble({ message, tutorPersona }: MessageBubblePr
         <div className={`${isUser ? 'bg-primary text-primary-foreground' : 'bg-card border-border'} rounded-lg ${!isUser ? 'border' : ''} p-4 shadow-sm ${isUser ? 'max-w-[80%]' : ''}`}>
           <p className={`${isUser ? 'text-primary-foreground' : 'text-foreground'} whitespace-pre-wrap`}>{message.content}</p>
         </div>
+        
+        {/* YouTube Search Button - Only for AI responses */}
+        {!isUser && onYouTubeSearch && (
+          <div className="mt-2 flex justify-start">
+            <button
+              onClick={() => onYouTubeSearch(message.content.substring(0, 100))}
+              className="inline-flex items-center px-3 py-1 text-xs bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+              title="Search YouTube for related videos"
+            >
+              <i className="fab fa-youtube mr-1"></i>
+              Search YouTube
+            </button>
+          </div>
+        )}
         
         {/* YouTube Video Integration */}
         {message.videoUrl && (

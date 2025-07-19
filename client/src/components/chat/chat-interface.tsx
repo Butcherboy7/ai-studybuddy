@@ -30,6 +30,7 @@ export default function ChatInterface() {
   const [isListening, setIsListening] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -43,40 +44,40 @@ export default function ChatInterface() {
     
     const promptSets = {
       "Math Tutor": [
-        "Explain this concept step by step",
-        "Show me an example problem",
-        "What are the key formulas?",
-        "Practice problems for this topic"
+        "What is the Pythagorean theorem?",
+        "How do you solve quadratic equations?",
+        "Explain derivatives in calculus",
+        "What is probability in mathematics?"
       ],
       "Science Tutor": [
-        "Explain the scientific method",
-        "Show me a diagram or experiment",
-        "What are the real-world applications?",
-        "Key terminology and definitions"
+        "What is photosynthesis?",
+        "How does DNA replication work?",
+        "Explain Newton's laws of motion",
+        "What is the water cycle?"
       ],
       "English Tutor": [
-        "Help me analyze this text",
-        "Grammar rules and examples",
-        "Writing tips and techniques",
-        "Vocabulary expansion exercises"
+        "What is a metaphor?",
+        "How do you write a thesis statement?",
+        "What are the parts of speech?",
+        "Explain different types of essays"
       ],
       "History Tutor": [
-        "Timeline of important events",
-        "Cause and effect relationships",
-        "Key historical figures",
-        "Compare different time periods"
+        "What caused World War I?",
+        "Who was Napoleon Bonaparte?",
+        "What was the Industrial Revolution?",
+        "Explain the Renaissance period"
       ],
       "Programming Tutor": [
-        "Explain this code concept",
-        "Show me a coding example",
-        "Best practices and patterns",
-        "Debug this problem"
+        "What is object-oriented programming?",
+        "How do arrays work?",
+        "Explain if-else statements",
+        "What is a function in programming?"
       ],
       "General Tutor": [
-        "Explain this concept simply",
-        "Give me study tips",
-        "Create a learning plan",
-        "Test my understanding"
+        "How do I study effectively?",
+        "What is critical thinking?",
+        "How do I manage my time?",
+        "What are good note-taking methods?"
       ]
     };
 
@@ -166,6 +167,21 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+  // Handle scroll detection for scroll button
+  useEffect(() => {
+    const chatContainer = document.querySelector('.chat-messages-container');
+    if (!chatContainer) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollButton(!isNearBottom);
+    };
+
+    chatContainer.addEventListener('scroll', handleScroll);
+    return () => chatContainer.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -246,18 +262,7 @@ export default function ChatInterface() {
   };
 
   // Handle predefined prompt auto-send
-  const handleSendPredefinedPrompt = async (prompt: string) => {
-    if (isLoading) return;
-    
-    // Add user message immediately
-    addMessage({
-      role: "user",
-      content: prompt
-    });
 
-    setLoading(true);
-    sendMessageMutation.mutate(prompt);
-  };
 
   // File upload and OCR processing
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -367,6 +372,13 @@ export default function ChatInterface() {
 
   const triggerFileUpload = () => {
     fileInputRef.current?.click();
+  };
+
+  // Handle YouTube search
+  const handleYouTubeSearch = (query: string) => {
+    const searchQuery = encodeURIComponent(`${query} educational tutorial explanation`);
+    const youtubeUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
+    window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
   };
 
   // Remove the typing indicator for user input - we only want it for AI responses
@@ -501,7 +513,7 @@ export default function ChatInterface() {
 
 
       {/* Chat Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background chat-messages-container relative">
         {messages.length === 0 && (
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
@@ -542,7 +554,8 @@ export default function ChatInterface() {
           <MessageBubble 
             key={message.id} 
             message={message} 
-            tutorPersona={selectedTutor} 
+            tutorPersona={selectedTutor}
+            onYouTubeSearch={handleYouTubeSearch}
           />
         ))}
         
@@ -567,6 +580,17 @@ export default function ChatInterface() {
         )}
         
         <div ref={messagesEndRef} />
+        
+        {/* Scroll to bottom button */}
+        {showScrollButton && (
+          <button
+            onClick={scrollToBottom}
+            className="fixed bottom-24 right-6 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-all z-10 flex items-center justify-center"
+            title="Scroll to bottom"
+          >
+            <i className="fas fa-chevron-down"></i>
+          </button>
+        )}
       </div>
 
       {/* Predefined Prompts - Show only after first AI response and hide when loading */}
@@ -578,7 +602,7 @@ export default function ChatInterface() {
                 key={index}
                 variant="outline"
                 size="sm"
-                onClick={() => handleSendPredefinedPrompt(prompt)}
+                onClick={() => sendMessage(prompt)}
                 className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 {prompt}
