@@ -7,6 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { tutorPersonas } from "@/components/welcome/welcome-screen";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function ChatInterface() {
   const { 
@@ -15,7 +22,8 @@ export default function ChatInterface() {
     addMessage, 
     sessionId, 
     setLoading, 
-    isLoading 
+    isLoading,
+    setSelectedTutor
   } = useAppStore();
   
   const [inputMessage, setInputMessage] = useState("");
@@ -269,7 +277,7 @@ export default function ChatInterface() {
 
   return (
     <div className="flex-1 flex flex-col bg-background">
-      {/* Chat Header */}
+      {/* Chat Header with Mode Switcher */}
       <div className="bg-card border-b border-border px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -282,6 +290,33 @@ export default function ChatInterface() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {/* Mode Switcher Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="text-sm">
+                  <i className="fas fa-exchange-alt mr-2"></i>
+                  Switch Mode
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {tutorPersonas.map((tutor) => (
+                  <DropdownMenuItem
+                    key={tutor.id}
+                    onClick={() => setSelectedTutor(tutor)}
+                    className="flex items-center"
+                  >
+                    <div className={`w-6 h-6 bg-gradient-to-br ${tutor.color} rounded flex items-center justify-center mr-3`}>
+                      <i className={`${tutor.icon} text-white text-xs`}></i>
+                    </div>
+                    <div>
+                      <div className="font-medium">{tutor.name}</div>
+                      <div className="text-xs text-muted-foreground">{tutor.specialization.split(' • ')[0]}</div>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Button
               variant="ghost"
               size="sm"
@@ -302,22 +337,7 @@ export default function ChatInterface() {
         </div>
       </div>
 
-      {/* Predefined Prompts */}
-      <div className="px-6 py-3 bg-muted/50 border-b border-border">
-        <div className="flex flex-wrap gap-2">
-          {getPredefinedPrompts().map((prompt, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              size="sm"
-              onClick={() => handlePredefinedPrompt(prompt)}
-              className="text-xs bg-background hover:bg-primary hover:text-primary-foreground transition-all"
-            >
-              {prompt}
-            </Button>
-          ))}
-        </div>
-      </div>
+
 
       {/* Chat Messages Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-background">
@@ -366,6 +386,23 @@ export default function ChatInterface() {
         )}
         
         <div ref={messagesEndRef} />
+      </div>
+
+      {/* Predefined Prompts - Right above input */}
+      <div className="px-4 py-2 bg-muted/30 border-t border-border">
+        <div className="flex flex-wrap gap-2">
+          {getPredefinedPrompts().map((prompt, index) => (
+            <Button
+              key={index}
+              variant="outline"
+              size="sm"
+              onClick={() => handlePredefinedPrompt(prompt)}
+              className="text-xs h-7 px-3 bg-background hover:bg-primary hover:text-primary-foreground transition-all"
+            >
+              {prompt}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Chat Input */}
@@ -418,19 +455,6 @@ export default function ChatInterface() {
             <i className="fas fa-paper-plane mr-2"></i>
             Send
           </Button>
-        </div>
-
-        <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
-          <div className="flex items-center space-x-4">
-            <span>✨ AI responses include relevant videos when helpful</span>
-            {('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) && (
-              <Badge variant="secondary" className="text-xs">
-                <i className="fas fa-microphone mr-1"></i>
-                Voice input available
-              </Badge>
-            )}
-          </div>
-          <span>Press Shift + Enter for new line</span>
         </div>
       </div>
     </div>

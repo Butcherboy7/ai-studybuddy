@@ -4,8 +4,8 @@ import AppSidebar from "@/components/layout/app-sidebar";
 import Header from "@/components/layout/header";
 import WelcomeScreen from "@/components/welcome/welcome-screen";
 import ChatInterface from "@/components/chat/chat-interface";
-import PaperGenerator from "@/components/paper-generator/paper-generator";
-import SkillsTracking from "@/components/skills/skills-tracking";
+import PaperGenerator from "@/pages/paper-generator";
+import SkillsPage from "@/pages/skills";
 
 export default function Home() {
   const { currentView, sidebarCollapsed, toggleSidebar } = useAppStore();
@@ -19,7 +19,7 @@ export default function Home() {
       case 'paper-generator':
         return <PaperGenerator />;
       case 'skills':
-        return <SkillsTracking />;
+        return <SkillsPage />;
       default:
         return <WelcomeScreen />;
     }
