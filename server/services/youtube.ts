@@ -23,8 +23,14 @@ export async function searchEducationalVideo(query: string): Promise<YouTubeSear
       return null;
     }
 
-    // Add educational terms to improve search quality
-    const educationalQuery = `${query} tutorial education learn explain`;
+    // Clean up the query and add educational terms
+    const cleanQuery = query
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 60); // Limit query length
+    
+    const educationalQuery = `${cleanQuery} math education tutorial learn`;
     
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?` +
       `part=snippet&type=video&videoDuration=medium&videoEmbeddable=true&` +

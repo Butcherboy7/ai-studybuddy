@@ -352,8 +352,29 @@ export default function ChatInterface() {
 
   // Handle explain with video request
   const handleExplainWithVideo = (content: string) => {
-    // Extract key concepts and create a targeted search query
-    const searchQuery = content.replace(/[#*`\n]/g, ' ').trim().substring(0, 80) + ' tutorial';
+    // Extract key mathematical/educational concepts from the content
+    const keywordMatches = content.match(/\b(?:theorem|formula|equation|concept|principle|law|method|algorithm|function|derivative|integral|pythagorean|quadratic|calculus|algebra|geometry|physics|chemistry|biology|history|literature|programming|science)\b/gi);
+    const conceptMatches = content.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:theorem|formula|equation|law|principle|method|rule))\b/g);
+    
+    let searchQuery = '';
+    
+    if (keywordMatches && keywordMatches.length > 0) {
+      searchQuery = keywordMatches.slice(0, 2).join(' ');
+    } else if (conceptMatches && conceptMatches.length > 0) {
+      searchQuery = conceptMatches[0];
+    } else {
+      // Fallback: extract first meaningful sentence
+      const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 10);
+      if (sentences.length > 0) {
+        const cleanSentence = sentences[0].replace(/^(That's|This is|Here's|Let me|I'll|You|The answer is|To solve this)/i, '').trim();
+        const words = cleanSentence.split(' ').slice(0, 5);
+        searchQuery = words.join(' ');
+      } else {
+        searchQuery = content.substring(0, 30);
+      }
+    }
+    
+    searchQuery = `${searchQuery.trim()} tutorial explanation`;
     
     toast({
       title: "Searching for video...",
