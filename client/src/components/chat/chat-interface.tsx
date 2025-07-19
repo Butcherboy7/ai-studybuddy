@@ -38,6 +38,60 @@ export default function ChatInterface() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Tutor personas for selection
+  const tutorPersonas = [
+    {
+      id: 'math',
+      name: 'Math Tutor',
+      specialization: 'Mathematics • Algebra • Calculus • Geometry',
+      description: 'Expert in mathematical concepts from basic arithmetic to advanced calculus',
+      icon: 'fas fa-calculator',
+      color: 'from-blue-500 to-blue-700',
+      popularity: 'Most Popular'
+    },
+    {
+      id: 'science',
+      name: 'Science Tutor',
+      specialization: 'Physics • Chemistry • Biology • Earth Science',
+      description: 'Comprehensive science education with practical experiments and real-world applications',
+      icon: 'fas fa-flask',
+      color: 'from-green-500 to-green-700'
+    },
+    {
+      id: 'english',
+      name: 'English Tutor',
+      specialization: 'Literature • Writing • Grammar • Reading Comprehension',
+      description: 'Improve your language skills, writing abilities, and literary analysis',
+      icon: 'fas fa-book',
+      color: 'from-purple-500 to-purple-700'
+    },
+    {
+      id: 'history',
+      name: 'History Tutor',
+      specialization: 'World History • American History • Ancient Civilizations',
+      description: 'Explore historical events, cultures, and their impact on modern society',
+      icon: 'fas fa-landmark',
+      color: 'from-amber-500 to-amber-700'
+    },
+    {
+      id: 'programming',
+      name: 'Programming Tutor',
+      specialization: 'Python • JavaScript • Web Development • Algorithms',
+      description: 'Learn coding fundamentals, programming languages, and software development',
+      icon: 'fas fa-code',
+      color: 'from-indigo-500 to-indigo-700',
+      popularity: 'Trending'
+    },
+    {
+      id: 'general',
+      name: 'General Tutor',
+      specialization: 'Multi-Subject • Study Skills • Test Prep • Academic Support',
+      description: 'Versatile tutor for various subjects and general academic guidance',
+      icon: 'fas fa-graduation-cap',
+      color: 'from-slate-500 to-slate-700'
+    }
+  ];
+
   // Get contextual quick action buttons for in-chat use
   const getQuickActionButtons = () => {
     return [
@@ -656,10 +710,36 @@ export default function ChatInterface() {
 
   if (!selectedTutor) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-foreground mb-2">No Tutor Selected</h2>
-          <p className="text-muted-foreground">Please select a tutor persona to start chatting.</p>
+      <div className="flex-1 flex flex-col items-center justify-center bg-background p-6">
+        <div className="text-center mb-8">
+          <i className="fas fa-user-graduate text-6xl text-muted-foreground mb-4"></i>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Choose Your AI Tutor</h2>
+          <p className="text-muted-foreground">Select a tutor to start your personalized learning experience.</p>
+        </div>
+        
+        {/* Show tutor selection cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl w-full">
+          {tutorPersonas.map((tutor) => (
+            <div
+              key={tutor.id}
+              onClick={() => setSelectedTutor(tutor)}
+              className="cursor-pointer p-4 rounded-lg border border-border hover:border-primary/50 transition-all duration-200 hover:shadow-md bg-card"
+            >
+              <div className="flex items-center mb-3">
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${tutor.color} flex items-center justify-center mr-3`}>
+                  <i className={`${tutor.icon} text-white text-sm`}></i>
+                </div>
+                <div>
+                  <h4 className="font-medium text-sm">{tutor.name}</h4>
+                  {tutor.popularity && (
+                    <span className="text-xs text-primary font-medium">{tutor.popularity}</span>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">{tutor.specialization}</p>
+              <p className="text-xs text-muted-foreground">{tutor.description}</p>
+            </div>
+          ))}
         </div>
       </div>
     );

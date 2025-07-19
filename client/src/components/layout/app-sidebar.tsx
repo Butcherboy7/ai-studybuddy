@@ -109,10 +109,8 @@ export default function AppSidebar() {
               // Handle routing for specific pages
               if (item.view === 'career-advisor') {
                 setLocation('/career-advisor');
-              } else if (item.view === 'welcome') {
-                setLocation('/');
               } else {
-                // For non-route views, navigate to home
+                // For all other views, navigate to home (which handles view switching internally)
                 setLocation('/');
               }
             }}
