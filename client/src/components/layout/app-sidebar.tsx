@@ -67,7 +67,12 @@ export default function AppSidebar() {
         {!sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-lg hover:bg-muted transition-all text-muted-foreground hover:text-foreground"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-muted/50"
+            style={{ 
+              backgroundColor: 'var(--card-bg)', 
+              border: `1px solid var(--border)`,
+              color: 'var(--text-secondary)'
+            }}
             title="Collapse sidebar"
           >
             <i className="fas fa-chevron-left text-sm"></i>
@@ -77,14 +82,15 @@ export default function AppSidebar() {
         {sidebarCollapsed && (
           <button
             onClick={toggleSidebar}
-            className="absolute top-4 -right-3 w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-all icon icon-hover"
+            className="absolute top-4 right-2 w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-muted/50"
             style={{ 
-              backgroundColor: 'var(--sidebar-bg)', 
-              border: `1px solid var(--sidebar-border)` 
+              backgroundColor: 'var(--card-bg)', 
+              border: `1px solid var(--border)`,
+              color: 'var(--text-secondary)'
             }}
             title="Expand sidebar"
           >
-            <i className="fas fa-chevron-right text-xs"></i>
+            <i className="fas fa-chevron-right text-sm"></i>
           </button>
         )}
       </div>
