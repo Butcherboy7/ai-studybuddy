@@ -26,7 +26,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--main-bg)' }}>
+    <div className="flex h-screen" style={{ backgroundColor: 'var(--main-bg)' }}>
       <AppSidebar />
       
       {/* Mobile menu button */}
@@ -107,7 +107,7 @@ export default function Home() {
       
       {/* Main content */}
       <div className={cn(
-        "flex-1 flex flex-col overflow-hidden transition-sidebar",
+        "flex-1 flex flex-col transition-sidebar",
         sidebarCollapsed ? "sidebar-margin-collapsed" : "sidebar-margin",
         "pt-16 md:pt-0"
       )}>
