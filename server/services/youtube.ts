@@ -96,7 +96,8 @@ export async function searchYouTubeCourses(skill: string, careerGoal: string): P
     
     if (!response.ok) {
       console.error("YouTube API error for courses:", response.status, response.statusText);
-      return [];
+      // Return fallback course suggestions when API fails
+      return getFallbackCourses(skill, careerGoal);
     }
 
     const data = await response.json();
@@ -133,8 +134,63 @@ export async function searchYouTubeCourses(skill: string, careerGoal: string): P
 
   } catch (error) {
     console.error("YouTube course search error:", error);
-    return [];
+    // Return fallback course suggestions when API fails
+    return getFallbackCourses(skill, careerGoal);
   }
+}
+
+function getFallbackCourses(skill: string, careerGoal: string): CourseResult[] {
+  // Provide fallback course recommendations when YouTube API is unavailable
+  const skillLower = skill.toLowerCase();
+  
+  if (skillLower.includes('javascript') || skillLower.includes('js')) {
+    return [
+      {
+        title: "JavaScript Tutorial for Beginners",
+        url: "https://www.youtube.com/results?search_query=javascript+tutorial+beginner",
+        channel: "Search for JavaScript tutorials",
+        description: "Comprehensive JavaScript learning resources"
+      },
+      {
+        title: "Advanced JavaScript Concepts",
+        url: "https://www.youtube.com/results?search_query=advanced+javascript+concepts",
+        channel: "Search for advanced JavaScript",
+        description: "Deep dive into JavaScript concepts"
+      }
+    ];
+  }
+  
+  if (skillLower.includes('python')) {
+    return [
+      {
+        title: "Python Programming Tutorial",
+        url: "https://www.youtube.com/results?search_query=python+tutorial+beginner",
+        channel: "Search for Python tutorials",
+        description: "Learn Python programming from basics"
+      }
+    ];
+  }
+  
+  if (skillLower.includes('react')) {
+    return [
+      {
+        title: "React.js Complete Course",
+        url: "https://www.youtube.com/results?search_query=react+tutorial+complete+course",
+        channel: "Search for React tutorials",
+        description: "Master React.js development"
+      }
+    ];
+  }
+  
+  // Generic fallback
+  return [
+    {
+      title: `${skill} Learning Resources`,
+      url: `https://www.youtube.com/results?search_query=${encodeURIComponent(skill + ' tutorial course')}`,
+      channel: "YouTube Search",
+      description: `Find ${skill} tutorials and courses on YouTube`
+    }
+  ];
 }
 
 function formatDuration(isoDuration: string): string {
