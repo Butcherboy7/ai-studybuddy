@@ -35,6 +35,7 @@ export default function CareerGrowth() {
   const [analysisResult, setAnalysisResult] = useState<{
     analysis: SkillGapAnalysis;
     roadmap: string;
+    success?: boolean;
   } | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState<string>('');
 
@@ -84,6 +85,7 @@ export default function CareerGrowth() {
       });
     },
     onSuccess: (data) => {
+      console.log("Analysis response:", data); // Debug log
       setAnalysisResult(data);
       setAnalysisProgress('');
       toast({
@@ -177,7 +179,7 @@ export default function CareerGrowth() {
               </p>
             </div>
 
-            {!analysisResult ? (
+            {!analysisResult || !analysisResult.analysis ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Resume Upload Section */}
                 <Card>
@@ -325,14 +327,14 @@ export default function CareerGrowth() {
                         <p className="text-muted-foreground">Based on your resume and career goals</p>
                       </div>
                       <div className="text-center">
-                        <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis.overallScore)}`}>
-                          {analysisResult.analysis.overallScore}%
+                        <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis?.overallScore || 0)}`}>
+                          {analysisResult.analysis?.overallScore || 0}%
                         </div>
                         <p className="text-sm text-muted-foreground">Career Readiness</p>
                       </div>
                     </div>
                     <div className="mt-4">
-                      <Progress value={analysisResult.analysis.overallScore} className="h-3" />
+                      <Progress value={analysisResult.analysis?.overallScore || 0} className="h-3" />
                     </div>
                   </CardContent>
                 </Card>
@@ -350,11 +352,11 @@ export default function CareerGrowth() {
                       <div>
                         <h4 className="font-semibold text-green-600 dark:text-green-400 mb-2">Current Skills</h4>
                         <div className="flex flex-wrap gap-2">
-                          {analysisResult.analysis.currentSkills.map((skill, index) => (
+                          {analysisResult.analysis?.currentSkills?.map((skill, index) => (
                             <Badge key={index} variant="secondary" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                               {skill}
                             </Badge>
-                          ))}
+                          )) || <p className="text-sm text-gray-500">No skills identified</p>}
                         </div>
                       </div>
 
@@ -363,11 +365,11 @@ export default function CareerGrowth() {
                       <div>
                         <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2">Skills to Learn</h4>
                         <div className="flex flex-wrap gap-2">
-                          {analysisResult.analysis.skillGaps.map((skill, index) => (
+                          {analysisResult.analysis?.skillGaps?.map((skill, index) => (
                             <Badge key={index} variant="destructive" className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
                               {skill}
                             </Badge>
-                          ))}
+                          )) || <p className="text-sm text-gray-500">No skill gaps identified</p>}
                         </div>
                       </div>
 
@@ -375,7 +377,7 @@ export default function CareerGrowth() {
 
                       <div>
                         <h4 className="font-semibold mb-2">Experience Level</h4>
-                        <p className="text-sm text-muted-foreground">{analysisResult.analysis.experience}</p>
+                        <p className="text-sm text-muted-foreground">{analysisResult.analysis?.experience || "Not determined"}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -390,7 +392,7 @@ export default function CareerGrowth() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {analysisResult.analysis.recommendations.map((rec, index) => (
+                        {analysisResult.analysis?.recommendations?.map((rec, index) => (
                           <div key={index} className="border rounded-lg p-4">
                             <div className="flex items-start justify-between mb-2">
                               <h4 className="font-semibold">{rec.skill}</h4>
@@ -419,7 +421,7 @@ export default function CareerGrowth() {
                               </div>
                             )}
                           </div>
-                        ))}
+                        )) || <p className="text-sm text-gray-500">No recommendations available</p>}
                       </div>
                     </CardContent>
                   </Card>
@@ -435,7 +437,7 @@ export default function CareerGrowth() {
                   </CardHeader>
                   <CardContent>
                     <div className="prose dark:prose-invert max-w-none">
-                      <div className="whitespace-pre-wrap text-sm">{analysisResult.roadmap}</div>
+                      <div className="whitespace-pre-wrap text-sm">{analysisResult.roadmap || "No roadmap available"}</div>
                     </div>
                   </CardContent>
                 </Card>
