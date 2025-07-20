@@ -86,8 +86,20 @@ export default function CareerGrowth() {
     },
     onSuccess: (data) => {
       console.log("Analysis response:", data); // Debug log
-      console.log("Has analysis:", !!data.analysis); // Check if analysis exists
-      console.log("Analysis structure:", data.analysis); // Check analysis structure
+      console.log("Has analysis:", !!data?.analysis); // Check if analysis exists
+      console.log("Analysis structure:", data?.analysis); // Check analysis structure
+      console.log("Full response keys:", Object.keys(data || {})); // Debug keys
+      
+      if (!data || !data.analysis) {
+        console.error("Invalid response structure:", data);
+        toast({
+          title: "Analysis Error",
+          description: "Invalid response received. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       setAnalysisResult(data);
       setAnalysisProgress('');
       toast({
@@ -328,11 +340,23 @@ export default function CareerGrowth() {
                         <h2 className="text-2xl font-bold mb-2">Your Career Analysis</h2>
                         <p className="text-muted-foreground">Based on your resume and career goals</p>
                       </div>
-                      <div className="text-center">
-                        <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis?.overallScore || 0)}`}>
-                          {analysisResult.analysis?.overallScore || 0}%
+                      <div className="flex items-center gap-4">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setAnalysisResult(null);
+                            setAnalysisProgress('');
+                          }}
+                        >
+                          New Analysis
+                        </Button>
+                        <div className="text-center">
+                          <div className={`text-4xl font-bold ${getScoreColor(analysisResult.analysis?.overallScore || 0)}`}>
+                            {analysisResult.analysis?.overallScore || 0}%
+                          </div>
+                          <p className="text-sm text-muted-foreground">Career Readiness</p>
                         </div>
-                        <p className="text-sm text-muted-foreground">Career Readiness</p>
                       </div>
                     </div>
                     <div className="mt-4">

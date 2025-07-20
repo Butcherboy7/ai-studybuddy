@@ -468,6 +468,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Race between analysis and timeout
       const result = await Promise.race([analysisTask, analysisTimeout]);
       
+      console.log("Final result being sent to client:", JSON.stringify(result, null, 2));
       res.json(result);
       
     } catch (error) {

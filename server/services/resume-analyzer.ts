@@ -46,40 +46,52 @@ Return your analysis as JSON in this exact format:
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash", // Using faster model
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "object",
-          properties: {
-            currentSkills: { type: "array", items: { type: "string" } },
-            requiredSkills: { type: "array", items: { type: "string" } },
-            skillGaps: { type: "array", items: { type: "string" } },
-            experience: { type: "string" },
-            recommendations: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  skill: { type: "string" },
-                  priority: { type: "string", enum: ["High", "Medium", "Low"] },
-                  description: { type: "string" }
-                },
-                required: ["skill", "priority", "description"]
-              }
-            },
-            overallScore: { type: "number", minimum: 0, maximum: 100 }
-          },
-          required: ["currentSkills", "requiredSkills", "skillGaps", "experience", "recommendations", "overallScore"]
-        }
-      },
       contents: analysisPrompt,
     });
 
-    const analysisData = JSON.parse(response.text || "{}");
+    console.log("Gemini raw response:", response.text);
+    
+    let analysisData;
+    try {
+      // Try to parse the response text
+      const responseText = response.text || "";
+      if (!responseText.trim()) {
+        throw new Error("Empty response from Gemini");
+      }
+      
+      // Clean the response text of any markdown formatting
+      const cleanedText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      analysisData = JSON.parse(cleanedText);
+      
+      // Validate required fields
+      if (!analysisData.currentSkills || !analysisData.skillGaps || !analysisData.recommendations) {
+        throw new Error("Missing required fields in analysis");
+      }
+      
+    } catch (parseError) {
+      console.error("JSON parsing error:", parseError);
+      console.error("Raw response text:", response.text);
+      
+      // Fallback analysis structure
+      analysisData = {
+        currentSkills: ["Analysis Error", "Please Try Again"],
+        requiredSkills: ["Multiple Skills Required"],
+        skillGaps: ["Unable to analyze - please try with shorter text"],
+        experience: "Unable to determine due to parsing error",
+        recommendations: [
+          {
+            skill: "Resume Analysis",
+            priority: "High",
+            description: "There was an error analyzing your resume. Please try again with a shorter resume or simpler career goal."
+          }
+        ],
+        overallScore: 0
+      };
+    }
     
     // Only search for courses for top 3 high-priority skills to improve performance
-    const highPrioritySkills = analysisData.recommendations.filter((rec: any) => rec.priority === 'High').slice(0, 3);
-    const otherSkills = analysisData.recommendations.filter((rec: any) => rec.priority !== 'High');
+    const highPrioritySkills = (analysisData.recommendations || []).filter((rec: any) => rec.priority === 'High').slice(0, 3);
+    const otherSkills = (analysisData.recommendations || []).filter((rec: any) => rec.priority !== 'High');
     
     // Search for YouTube courses in parallel for high-priority skills only
     const highPriorityWithCourses = await Promise.all(
