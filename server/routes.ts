@@ -446,22 +446,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { resumeText, careerGoal, targetRole } = resumeAnalysisRequestSchema.parse(req.body);
       
-      // Analyze resume for skill gaps
-      const skillGapAnalysis = await analyzeResumeForSkillGaps(resumeText, careerGoal, targetRole);
+      // Add timeout to the entire analysis process
+      const analysisTimeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Analysis timeout - please try again')), 30000) // 30 second timeout
+      );
       
-      // Generate career roadmap
-      const roadmap = await generateCareerRoadmap(skillGapAnalysis, careerGoal);
+      const analysisTask = (async () => {
+        // Analyze resume for skill gaps
+        const skillGapAnalysis = await analyzeResumeForSkillGaps(resumeText, careerGoal, targetRole);
+        
+        // Generate career roadmap in parallel with the analysis results
+        const roadmap = await generateCareerRoadmap(skillGapAnalysis, careerGoal);
+        
+        return {
+          analysis: skillGapAnalysis,
+          roadmap,
+          success: true
+        };
+      })();
       
-      res.json({
-        analysis: skillGapAnalysis,
-        roadmap,
-        success: true
-      });
+      // Race between analysis and timeout
+      const result = await Promise.race([analysisTask, analysisTimeout]);
+      
+      res.json(result);
       
     } catch (error) {
       console.error("Resume analysis error:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      const statusCode = errorMessage.includes("validation") ? 400 : 500;
+      const statusCode = errorMessage.includes("validation") ? 400 : 
+                        errorMessage.includes("timeout") ? 408 : 500;
       
       res.status(statusCode).json({ 
         error: "Failed to analyze resume",

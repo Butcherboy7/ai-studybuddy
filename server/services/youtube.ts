@@ -89,7 +89,7 @@ export async function searchYouTubeCourses(skill: string, careerGoal: string): P
     
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?` +
       `part=snippet&type=video&videoDuration=long&videoEmbeddable=true&` +
-      `safeSearch=strict&relevanceLanguage=en&maxResults=3&order=relevance&` +
+      `safeSearch=strict&relevanceLanguage=en&maxResults=2&order=relevance&` +
       `q=${encodeURIComponent(courseQuery)}&key=${apiKey}`;
 
     const response = await fetch(searchUrl);

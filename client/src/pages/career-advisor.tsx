@@ -33,6 +33,7 @@ export default function CareerAdvisor() {
     analysis: SkillGapAnalysis;
     roadmap: string;
   } | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState<string>('');
 
   // File upload mutation
   const uploadMutation = useMutation({
@@ -72,6 +73,10 @@ export default function CareerAdvisor() {
     },
     onSuccess: (data) => {
       setAnalysisResult(data);
+      setAnalysisProgress('');
+    },
+    onError: () => {
+      setAnalysisProgress('');
     }
   });
 
@@ -89,6 +94,14 @@ export default function CareerAdvisor() {
       setUploadError('Please provide both resume text and career goal');
       return;
     }
+    setAnalysisProgress('Starting analysis...');
+    
+    // Simulate progress updates
+    setTimeout(() => setAnalysisProgress('Analyzing your skills with AI...'), 1000);
+    setTimeout(() => setAnalysisProgress('Finding skill gaps...'), 3000);
+    setTimeout(() => setAnalysisProgress('Searching for relevant courses...'), 8000);
+    setTimeout(() => setAnalysisProgress('Generating your career roadmap...'), 15000);
+    
     analyzeMutation.mutate();
   };
 
@@ -326,9 +339,16 @@ export default function CareerAdvisor() {
                             size="lg"
                           >
                             {analyzeMutation.isPending ? (
-                              <div className="flex items-center gap-3">
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                Analyzing Your Career Path...
+                              <div className="flex flex-col items-center gap-2">
+                                <div className="flex items-center gap-3">
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                  Analyzing Your Career Path...
+                                </div>
+                                {analysisProgress && (
+                                  <div className="text-sm text-blue-100 font-normal">
+                                    {analysisProgress}
+                                  </div>
+                                )}
                               </div>
                             ) : (
                               <div className="flex items-center gap-3">

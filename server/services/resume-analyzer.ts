@@ -45,7 +45,7 @@ Return your analysis as JSON in this exact format:
 }`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash", // Using faster model
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -77,11 +77,20 @@ Return your analysis as JSON in this exact format:
 
     const analysisData = JSON.parse(response.text || "{}");
     
-    // Find YouTube courses for each skill gap
-    const recommendationsWithCourses = await Promise.all(
-      analysisData.recommendations.map(async (rec: any) => {
+    // Only search for courses for high-priority skills to improve performance
+    const highPrioritySkills = analysisData.recommendations.filter((rec: any) => rec.priority === 'High');
+    const otherSkills = analysisData.recommendations.filter((rec: any) => rec.priority !== 'High');
+    
+    // Search for YouTube courses in parallel for high-priority skills only
+    const highPriorityWithCourses = await Promise.all(
+      highPrioritySkills.slice(0, 5).map(async (rec: any) => { // Limit to first 5 high-priority skills
         try {
-          const courses = await searchYouTubeCourses(rec.skill, careerGoal);
+          const courses = await Promise.race([
+            searchYouTubeCourses(rec.skill, careerGoal),
+            new Promise<any[]>((_, reject) => 
+              setTimeout(() => reject(new Error('YouTube search timeout')), 5000) // 5 second timeout
+            )
+          ]);
           return {
             ...rec,
             courses: courses || []
@@ -95,6 +104,12 @@ Return your analysis as JSON in this exact format:
         }
       })
     );
+    
+    // Combine all recommendations
+    const recommendationsWithCourses = [
+      ...highPriorityWithCourses,
+      ...otherSkills.map((rec: any) => ({ ...rec, courses: [] }))
+    ];
 
     return {
       ...analysisData,
