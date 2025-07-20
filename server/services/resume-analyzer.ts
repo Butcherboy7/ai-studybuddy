@@ -11,35 +11,19 @@ export async function analyzeResumeForSkillGaps(
 ): Promise<SkillGapAnalysis> {
   try {
     const analysisPrompt = `
-You are a career advisor and technical recruiter. Analyze this resume and career goal to identify skill gaps.
+Quick career analysis. Resume: ${resumeText.substring(0, 800)}
 
-**Resume:**
-${resumeText}
+Goal: ${careerGoal}
+${targetRole ? `Role: ${targetRole}` : ''}
 
-**Career Goal:** ${careerGoal}
-${targetRole ? `**Target Role:** ${targetRole}` : ''}
-
-Please provide a comprehensive analysis including:
-
-1. **Current Skills**: Extract all technical and professional skills mentioned in the resume
-2. **Required Skills**: List skills typically needed for the career goal/target role
-3. **Skill Gaps**: Identify missing skills that are important for the career goal
-4. **Experience Level**: Assess overall experience level
-5. **Priority Recommendations**: For each skill gap, provide priority (High/Medium/Low) and explanation
-6. **Overall Score**: Rate how ready the candidate is (0-100) for their career goal
-
-Return your analysis as JSON in this exact format:
+Return BRIEF JSON (max 20 words per description):
 {
-  "currentSkills": ["skill1", "skill2", ...],
-  "requiredSkills": ["required1", "required2", ...],
-  "skillGaps": ["gap1", "gap2", ...],
-  "experience": "Entry/Mid/Senior level description",
+  "currentSkills": ["skill1", "skill2", "skill3"],
+  "requiredSkills": ["req1", "req2", "req3"], 
+  "skillGaps": ["gap1", "gap2"],
+  "experience": "Brief level",
   "recommendations": [
-    {
-      "skill": "skill name",
-      "priority": "High/Medium/Low",
-      "description": "why this skill is important and specific learning path"
-    }
+    {"skill": "name", "priority": "High/Medium/Low", "description": "brief reason"}
   ],
   "overallScore": 75
 }`;
@@ -89,8 +73,8 @@ Return your analysis as JSON in this exact format:
       };
     }
     
-    // Only search for courses for top 3 high-priority skills to improve performance
-    const highPrioritySkills = (analysisData.recommendations || []).filter((rec: any) => rec.priority === 'High').slice(0, 3);
+    // Only search for courses for top 2 high-priority skills to improve performance  
+    const highPrioritySkills = (analysisData.recommendations || []).filter((rec: any) => rec.priority === 'High').slice(0, 2);
     const otherSkills = (analysisData.recommendations || []).filter((rec: any) => rec.priority !== 'High');
     
     // Search for YouTube courses in parallel for high-priority skills only
@@ -100,7 +84,7 @@ Return your analysis as JSON in this exact format:
           const courses = await Promise.race([
             searchYouTubeCourses(rec.skill, careerGoal),
             new Promise<any[]>((_, reject) => 
-              setTimeout(() => reject(new Error('YouTube search timeout')), 3000) // 3 second timeout
+              setTimeout(() => reject(new Error('YouTube search timeout')), 2000) // 2 second timeout
             )
           ]);
           return {
@@ -140,19 +124,16 @@ export async function generateCareerRoadmap(
 ): Promise<string> {
   try {
     const roadmapPrompt = `
-Based on this skill gap analysis, create a comprehensive learning roadmap for achieving the career goal: "${careerGoal}"
+Create SHORT roadmap for: ${careerGoal}
 
-**Analysis:**
-- Current Skills: ${skillGapAnalysis.currentSkills.join(", ")}
-- Skill Gaps: ${skillGapAnalysis.skillGaps.join(", ")}
-- Experience Level: ${skillGapAnalysis.experience}
-- Readiness Score: ${skillGapAnalysis.overallScore}%
+Skills to learn: ${skillGapAnalysis.skillGaps.join(", ")}
+Current level: ${skillGapAnalysis.experience}
+Score: ${skillGapAnalysis.overallScore}%
 
-**High Priority Skills to Learn:**
-${skillGapAnalysis.recommendations
-  .filter(rec => rec.priority === "High")
-  .map(rec => `- ${rec.skill}: ${rec.description}`)
-  .join("\n")}
+Return BRIEF roadmap (max 200 words):
+- What to focus on first
+- Learning timeline
+- Key resources
 
 Create a structured learning roadmap with:
 1. **Phase-based approach** (Beginner → Intermediate → Advanced)
