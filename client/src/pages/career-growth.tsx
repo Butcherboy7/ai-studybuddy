@@ -487,8 +487,8 @@ export default function CareerGrowth() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="prose dark:prose-invert max-w-none">
-                      <ReactMarkdown className="text-sm">
+                    <div className="prose dark:prose-invert max-w-none text-sm">
+                      <ReactMarkdown>
                         {analysisResult.roadmap || "No roadmap available"}
                       </ReactMarkdown>
                     </div>
