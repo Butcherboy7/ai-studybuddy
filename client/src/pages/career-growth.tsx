@@ -78,11 +78,23 @@ export default function CareerGrowth() {
   // Resume analysis mutation
   const analyzeMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('POST', '/api/analyze-resume', {
-        resumeText: resumeText.trim(),
-        careerGoal: careerGoal.trim(),
-        targetRole: targetRole.trim() || undefined
+      const response = await fetch('/api/analyze-resume', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resumeText: resumeText.trim(),
+          careerGoal: careerGoal.trim(),
+          targetRole: targetRole.trim() || undefined
+        }),
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: (data) => {
       console.log("Analysis response:", data); // Debug log
