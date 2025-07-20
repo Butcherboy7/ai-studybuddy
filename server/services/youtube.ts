@@ -30,17 +30,39 @@ export async function searchEducationalVideo(query: string): Promise<YouTubeSear
       .trim()
       .substring(0, 60); // Limit query length
     
-    const educationalQuery = `${cleanQuery} math education tutorial learn`;
+    // First try with simpler query
+    const simpleQuery = cleanQuery;
     
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?` +
-      `part=snippet&type=video&videoDuration=medium&videoEmbeddable=true&` +
-      `safeSearch=strict&relevanceLanguage=en&maxResults=1&` +
-      `q=${encodeURIComponent(educationalQuery)}&key=${apiKey}`;
+      `part=snippet&maxResults=1&q=${encodeURIComponent(simpleQuery)}&key=${apiKey}`;
+
+    console.log("Making YouTube API request to:", searchUrl.replace(apiKey, 'API_KEY_HIDDEN'));
 
     const response = await fetch(searchUrl);
     
     if (!response.ok) {
       console.error("YouTube API error:", response.status, response.statusText);
+      
+      // Try to get more detailed error information
+      try {
+        const errorData = await response.json();
+        console.error("YouTube API error details:", errorData);
+      } catch (e) {
+        console.error("Could not parse error response");
+      }
+      
+      // Return a helpful fallback for 403 errors
+      if (response.status === 403) {
+        console.warn("YouTube API 403 error - returning fallback result");
+        return {
+          videoId: "fallback",
+          title: "YouTube Search Currently Unavailable",
+          description: "The YouTube API is experiencing authentication issues. Please check your API key configuration.",
+          thumbnail: "",
+          url: `https://www.youtube.com/results?search_query=${encodeURIComponent(simpleQuery)}`
+        };
+      }
+      
       return null;
     }
 
@@ -88,8 +110,7 @@ export async function searchYouTubeCourses(skill: string, careerGoal: string): P
     const courseQuery = `${skill} tutorial course ${careerGoal} beginner intermediate`;
     
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?` +
-      `part=snippet&type=video&videoDuration=long&videoEmbeddable=true&` +
-      `safeSearch=strict&relevanceLanguage=en&maxResults=2&order=relevance&` +
+      `part=snippet&type=video&maxResults=2&order=relevance&` +
       `q=${encodeURIComponent(courseQuery)}&key=${apiKey}`;
 
     const response = await fetch(searchUrl);
