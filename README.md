@@ -1,197 +1,215 @@
 # EduTutor - AI-Powered Educational Platform
 
-A modern, responsive educational AI tutoring platform with session-based chat, practice paper generation, and multi-modal responses combining text and YouTube videos.
+🎓 **EduTutor** is a comprehensive educational AI platform that provides personalized tutoring, practice paper generation, and career growth guidance powered by Google Gemini AI and YouTube API integration.
 
-![EduTutor Preview](https://via.placeholder.com/800x400/3b82f6/ffffff?text=EduTutor+AI+Platform)
+## ✨ Features
 
-## 🌟 Features
+### 🤖 AI Chat Tutors
+- **Multi-Subject Tutors**: Math, Science, English, History, Programming, and General tutoring
+- **Personalized Learning**: Context-aware conversations that remember your learning progress
+- **Smart Video Integration**: Automatic YouTube educational video suggestions for visual learners
+- **Session Management**: Seamless navigation between different tutors while maintaining context
 
-- **AI-Powered Tutoring**: Multiple specialized AI personas for different subjects (Math, Science, English, etc.)
-- **Interactive Chat Interface**: Real-time conversations with AI tutors using Google Gemini
-- **YouTube Integration**: Automatic educational video suggestions for visual learning concepts
-- **Practice Paper Generator**: AI-generated custom practice papers with explanations
-- **Session Management**: No user accounts required - unique session-based interactions
-- **Dark/Light Mode**: Professional theme switching with smooth transitions
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
-- **Collapsible Sidebar**: Space-efficient navigation with smooth animations
+### 📝 Practice Paper Generator
+- **Custom Question Generation**: AI-created practice papers based on subject, topic, and difficulty
+- **Professional PDF Output**: Clean, formatted practice papers ready for printing
+- **Flexible Configuration**: Choose question count, difficulty level, and specific topics
+- **Instant Generation**: Fast PDF creation with proper formatting and layout
 
-## 🚀 Tech Stack
+### 🚀 Career Growth Advisor
+- **Resume Analysis**: Upload PDF or image resumes for AI-powered skill gap analysis
+- **Career Roadmaps**: Personalized learning paths with timelines and actionable steps
+- **YouTube Course Recommendations**: Curated educational content for skill development
+- **Skill Scoring**: Visual progress tracking with career readiness scores
+- **Multiple Career Goals**: Support for any career transition or advancement
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS + Bootstrap 5 + Custom CSS Variables
-- **State Management**: Zustand
-- **Data Fetching**: TanStack Query (React Query)
-- **Routing**: Wouter
-- **UI Components**: Shadcn/ui + Radix UI
-- **Backend**: Node.js + Express + TypeScript
-- **AI Integration**: Google Gemini API
-- **Video Content**: YouTube Data API v3
-- **Icons**: Font Awesome
+## 🛠️ Tech Stack
 
-## 📋 Prerequisites
+**Frontend:**
+- React 18 with TypeScript
+- Tailwind CSS + Shadcn/ui components
+- Vite for fast development and building
+- TanStack Query for data management
+- Wouter for lightweight routing
 
-- Node.js 18+ and npm
+**Backend:**
+- Node.js with Express.js
+- TypeScript with ESM modules
+- Drizzle ORM with PostgreSQL
+- File upload handling with Multer
+- PDF processing and OCR capabilities
+
+**AI & APIs:**
+- Google Gemini 2.5 Flash for chat and analysis
+- YouTube Data API v3 for educational content
+- Tesseract.js for OCR text extraction
+- PDF2JSON for document processing
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ installed
+- PostgreSQL database (or use Neon serverless)
 - Google Gemini API key
-- YouTube Data API v3 key
+- YouTube Data API key
 
-## ⚡ Quick Start
+### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/edututor.git
-   cd edututor
-   ```
+```bash
+git clone https://github.com/yourusername/edututor.git
+cd edututor
+```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. **Set up environment variables**
-   
-   Create a `.env` file in the root directory:
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
-   YOUTUBE_API_KEY=your_youtube_api_key_here
-   ```
+3. **Environment Setup**
+```bash
+cp .env.example .env
+```
 
-   **Getting API Keys:**
-   - **Gemini API**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey) to get your free API key
-   - **YouTube API**: Go to [Google Cloud Console](https://console.cloud.google.com/), enable YouTube Data API v3, and create credentials
+Edit `.env` with your API keys:
+```env
+# Database
+DATABASE_URL="your_postgresql_connection_string"
 
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+# AI Services
+GEMINI_API_KEY="your_google_gemini_api_key"
+YOUTUBE_API_KEY="your_youtube_data_api_key"
 
-5. **Open your browser**
-   
-   Navigate to `http://localhost:5000` to see the application running!
+# Environment
+NODE_ENV="development"
+PORT=5000
+```
 
-## 🎯 Usage
+4. **Database Setup**
+```bash
+npm run db:generate
+npm run db:migrate
+```
 
-1. **Choose Your Tutor**: Select from 6 specialized AI tutors on the welcome screen
-2. **Start Learning**: Ask questions and get detailed explanations with optional video content
-3. **Generate Practice**: Create custom practice papers for any subject
-4. **Track Progress**: View your session activity and learning history
-5. **Switch Themes**: Use the dropdown menu in the top-right to toggle dark/light mode
+5. **Start Development Server**
+```bash
+npm run dev
+```
 
-## 🏗️ Project Structure
+Visit `http://localhost:5000` to see the application.
+
+## 📁 Project Structure
 
 ```
-edututor/
-├── client/                 # Frontend React application
+├── client/                 # React frontend
 │   ├── src/
 │   │   ├── components/     # Reusable UI components
-│   │   ├── pages/          # Page components
-│   │   ├── contexts/       # React contexts (Theme)
-│   │   ├── hooks/          # Custom hooks
+│   │   ├── pages/          # Main application pages
 │   │   ├── lib/            # Utilities and configurations
-│   │   ├── store/          # Zustand state management
-│   │   └── main.tsx        # Application entry point
-│   └── index.html          # HTML template
-├── server/                 # Backend Express application
-│   ├── services/           # API service integrations
-│   ├── routes.ts           # API routes
-│   └── index.ts            # Server entry point
+│   │   └── store/          # Global state management
+├── server/                 # Express backend
+│   ├── services/           # AI and external API services
+│   ├── utils/              # Server utilities
+│   └── routes.ts           # API endpoints
 ├── shared/                 # Shared types and schemas
-└── package.json            # Dependencies and scripts
+└── docs/                   # Documentation
 ```
 
-## 🔧 Configuration
+## 🔑 API Keys Setup
 
-### Theme Customization
+### Google Gemini API
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Add to `.env` as `GEMINI_API_KEY`
 
-The app uses CSS custom properties for theming. You can customize colors in `client/src/index.css`:
+### YouTube Data API
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable YouTube Data API v3
+3. Create credentials (API key)
+4. Add to `.env` as `YOUTUBE_API_KEY`
 
-```css
-:root {
-  --primary: #3b82f6;
-  --background: #ffffff;
-  /* ... other variables */
-}
+## 🌐 Deployment
 
-.dark {
-  --primary: #3b82f6;
-  --background: #111827;
-  /* ... dark mode variables */
-}
-```
+### Deploy on Render
 
-### Adding New Tutors
-
-Add new tutor personas in `client/src/components/welcome/welcome-screen.tsx`:
-
-```typescript
-const tutorPersonas = [
-  {
-    id: 'new-tutor',
-    name: 'New Subject Tutor',
-    specialization: 'Your Subject',
-    description: 'Description of expertise',
-    icon: 'fas fa-icon',
-    color: 'from-color-500 to-color-600',
-    popularity: 'Expert Level'
-  },
-  // ... existing tutors
-];
-```
-
-## 🚀 Deployment
-
-### Production Build
-
+1. **Prepare for deployment**
 ```bash
 npm run build
 ```
 
-This creates optimized production files in the `dist/` directory.
+2. **Create Render account** at [render.com](https://render.com)
 
-### Environment Variables for Production
+3. **Connect your GitHub repository**
 
-Set these environment variables in your production environment:
-- `GEMINI_API_KEY`: Your Google Gemini API key
-- `YOUTUBE_API_KEY`: Your YouTube Data API v3 key
-- `NODE_ENV=production`
+4. **Configure build settings:**
+   - **Build Command:** `npm install && npm run build`
+   - **Start Command:** `npm start`
+   - **Environment:** Add your environment variables
 
-### Deployment Platforms
+5. **Add environment variables in Render dashboard:**
+   - `DATABASE_URL`
+   - `GEMINI_API_KEY`
+   - `YOUTUBE_API_KEY`
+   - `NODE_ENV=production`
 
-The app can be deployed on:
-- **Vercel**: Perfect for the frontend with serverless API routes
-- **Netlify**: Great for static hosting with serverless functions
-- **Railway**: Full-stack deployment with automatic builds
-- **Docker**: Use the included Docker configuration for containerized deployment
+### Deploy on Other Platforms
+
+The application is configured for easy deployment on:
+- Vercel
+- Netlify
+- Railway
+- Heroku
+- Any Node.js hosting platform
+
+## 📊 Features in Detail
+
+### AI Chat System
+- **Context Awareness**: Maintains conversation history for coherent responses
+- **Tutor Specialization**: Each tutor has specialized knowledge and teaching style
+- **Visual Learning**: Automatic video suggestions for concepts that benefit from visual explanation
+- **Study Mode**: Focused learning environment with minimized distractions
+
+### Practice Paper Generation
+- **Intelligent Question Creation**: AI generates relevant questions based on curriculum standards
+- **Professional Formatting**: Clean PDF output with proper spacing and typography
+- **Customizable Difficulty**: Adaptive question complexity based on student level
+- **Topic Targeting**: Focus on specific areas that need improvement
+
+### Career Growth Analysis
+- **Comprehensive Resume Parsing**: Extracts skills and experience from PDF/image uploads
+- **Industry-Standard Skill Mapping**: Compares current skills against job market requirements
+- **Learning Path Generation**: Creates structured roadmaps with timelines and resources
+- **Progress Tracking**: Visual indicators of career readiness and skill development
 
 ## 🤝 Contributing
 
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙋‍♂️ Support
+## 🙏 Acknowledgments
 
-If you have any questions or need help:
+- Google Gemini AI for powerful language processing
+- YouTube API for educational content integration
+- Shadcn/ui for beautiful, accessible components
+- The open-source community for amazing tools and libraries
 
-1. Check the [Issues](https://github.com/your-username/edututor/issues) page
-2. Create a new issue if your problem isn't listed
+## 📞 Support
+
+If you have any questions or run into issues:
+
+1. Check the [Issues](https://github.com/yourusername/edututor/issues) page
+2. Create a new issue with detailed information
 3. Join our community discussions
-
-## 🔮 Roadmap
-
-- [ ] User authentication and persistent sessions
-- [ ] Advanced analytics and learning insights
-- [ ] Offline mode support
-- [ ] Mobile app (React Native)
-- [ ] Integration with more AI models
-- [ ] Collaborative learning features
-- [ ] Advanced practice paper customization
 
 ---
 
-Made with ❤️ by the EduTutor team. Star ⭐ this repository if you find it helpful!
+**Built with ❤️ for educators and learners worldwide**
