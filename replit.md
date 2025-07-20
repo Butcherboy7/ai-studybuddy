@@ -155,13 +155,16 @@ Project setup: GitHub-friendly with proper documentation and easy deployment.
 - **No Answer Spaces**: PDFs now show only questions without answer spaces as requested
 - **Professional Typography**: Better fonts, spacing, and visual hierarchy in generated PDFs
 
-### Migration & Production Ready (Latest - January 20, 2025)
+### Unified Career Growth Advisor (Latest - January 20, 2025)
+- **Tool Consolidation**: Combined Career Advisor and Skills & Growth into single "Career Growth Advisor" tool
 - **Complete Migration**: Successfully migrated from Replit Agent to standard Replit environment
 - **API Keys Configured**: GEMINI_API_KEY and YOUTUBE_API_KEY added and functional
 - **PDF Text Extraction**: Full PDF and image processing with OCR using pdf2json and tesseract.js
 - **AI Career Analysis**: Comprehensive resume analysis with skill gap identification and priority scoring
-- **YouTube Course Integration**: Automatic educational video recommendations with direct links
+- **YouTube Course Integration**: Automatic educational video recommendations with direct links for top skills
 - **Career Roadmap**: Structured learning paths with timelines and actionable next steps
+- **Performance Optimized**: Analysis timeout increased to 60 seconds, YouTube searches limited to top 3 skills
+- **Streamlined Navigation**: Simplified from 4 tools to 3 main tools (Chat, Practice Papers, Career Growth)
 - **Production Ready**: All features tested and working, application ready for use
 
 ### Performance Optimization & API Fixes (January 20, 2025)

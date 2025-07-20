@@ -22,16 +22,10 @@ export default function AppSidebar() {
       view: 'paper-generator' as const
     },
     {
-      id: 'career-advisor',
-      label: 'Career Advisor',
-      icon: 'fas fa-briefcase',
-      view: 'career-advisor' as const
-    },
-    {
-      id: 'skills',
-      label: 'Skills & Growth',
-      icon: 'fas fa-chart-line',
-      view: 'skills' as const
+      id: 'career-growth',
+      label: 'Career Growth Advisor',
+      icon: 'fas fa-rocket',
+      view: 'career-growth' as const
     }
   ];
 
@@ -107,9 +101,9 @@ export default function AppSidebar() {
               setCurrentView(item.view);
               
               // Handle routing based on the target view
-              if (item.view === 'career-advisor') {
-                // Career advisor has its own route
-                setLocation('/career-advisor');
+              if (item.view === 'career-growth') {
+                // Career growth has its own route
+                setLocation('/career-growth');
               } else {
                 // All other views are handled by the home route
                 setLocation('/');

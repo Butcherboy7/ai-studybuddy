@@ -77,18 +77,18 @@ Return your analysis as JSON in this exact format:
 
     const analysisData = JSON.parse(response.text || "{}");
     
-    // Only search for courses for high-priority skills to improve performance
-    const highPrioritySkills = analysisData.recommendations.filter((rec: any) => rec.priority === 'High');
+    // Only search for courses for top 3 high-priority skills to improve performance
+    const highPrioritySkills = analysisData.recommendations.filter((rec: any) => rec.priority === 'High').slice(0, 3);
     const otherSkills = analysisData.recommendations.filter((rec: any) => rec.priority !== 'High');
     
     // Search for YouTube courses in parallel for high-priority skills only
     const highPriorityWithCourses = await Promise.all(
-      highPrioritySkills.slice(0, 5).map(async (rec: any) => { // Limit to first 5 high-priority skills
+      highPrioritySkills.map(async (rec: any) => {
         try {
           const courses = await Promise.race([
             searchYouTubeCourses(rec.skill, careerGoal),
             new Promise<any[]>((_, reject) => 
-              setTimeout(() => reject(new Error('YouTube search timeout')), 5000) // 5 second timeout
+              setTimeout(() => reject(new Error('YouTube search timeout')), 3000) // 3 second timeout
             )
           ]);
           return {

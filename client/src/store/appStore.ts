@@ -28,7 +28,7 @@ export interface SessionItem {
 
 export interface AppState {
   // Current view state
-  currentView: 'welcome' | 'chat' | 'paper-generator' | 'career-advisor' | 'skills';
+  currentView: 'welcome' | 'chat' | 'paper-generator' | 'career-growth';
   
   // Session management
   sessionId: string;

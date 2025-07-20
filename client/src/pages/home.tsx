@@ -6,7 +6,6 @@ import Header from "@/components/layout/header";
 import WelcomeScreen from "@/components/welcome/welcome-screen";
 import ChatInterface from "@/components/chat/chat-interface";
 import PaperGenerator from "@/components/paper-generator/paper-generator";
-import SkillsPage from "@/pages/skills";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -20,13 +19,13 @@ export default function Home() {
       if (hasSelectedTutor && selectedTutor && currentView === 'welcome') {
         setCurrentView('chat');
       }
-      // Only set to welcome if currentView is career-advisor (coming from another route)
+      // Only set to welcome if currentView is career-growth (coming from another route)
       // Otherwise preserve the current view for internal navigation
-      else if (currentView === 'career-advisor') {
+      else if (currentView === 'career-growth') {
         setCurrentView(hasSelectedTutor && selectedTutor ? 'chat' : 'welcome');
       }
-    } else if (location.startsWith('/career-advisor')) {
-      setCurrentView('career-advisor');
+    } else if (location.startsWith('/career-growth')) {
+      setCurrentView('career-growth');
     }
   }, [location, setCurrentView, currentView, hasSelectedTutor, selectedTutor]);
 
@@ -38,8 +37,6 @@ export default function Home() {
         return <ChatInterface />;
       case 'paper-generator':
         return <PaperGenerator />;
-      case 'skills':
-        return <SkillsPage />;
       default:
         return <WelcomeScreen />;
     }

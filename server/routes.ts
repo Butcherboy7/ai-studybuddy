@@ -448,7 +448,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Add timeout to the entire analysis process
       const analysisTimeout = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Analysis timeout - please try again')), 30000) // 30 second timeout
+        setTimeout(() => reject(new Error('Analysis timeout - please try again')), 60000) // 60 second timeout
       );
       
       const analysisTask = (async () => {
