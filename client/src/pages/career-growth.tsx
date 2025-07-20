@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import AppSidebar from '@/components/layout/app-sidebar';
 import Header from '@/components/layout/header';
 import { useToast } from '@/hooks/use-toast';
+import ReactMarkdown from 'react-markdown';
 
 export default function CareerGrowth() {
   const { sidebarCollapsed, toggleSidebar, setCurrentView } = useAppStore();
@@ -190,7 +191,7 @@ export default function CareerGrowth() {
       
       <div className={cn(
         "flex-1 flex flex-col transition-all duration-300",
-        sidebarCollapsed ? "ml-0" : "ml-64"
+        sidebarCollapsed ? "ml-16" : "ml-64"
       )}>
         <Header />
         
@@ -487,7 +488,9 @@ export default function CareerGrowth() {
                   </CardHeader>
                   <CardContent>
                     <div className="prose dark:prose-invert max-w-none">
-                      <div className="whitespace-pre-wrap text-sm">{analysisResult.roadmap || "No roadmap available"}</div>
+                      <ReactMarkdown className="text-sm">
+                        {analysisResult.roadmap || "No roadmap available"}
+                      </ReactMarkdown>
                     </div>
                   </CardContent>
                 </Card>
